@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "package": "net.jomcraft.frustrator.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.frustrator.refmap.json",
+  "mixins": [
+
+  ],
+  "client": [
+    "client/MixinChunk",
+    "client/MixinEffectRenderer",
+    "client/MixinRenderManager",
+    "client/MixinWorldClient",
+    "client/MixinTileEntityRendererDispatcher",
+    "client/MixinEntity",
+    "client/MixinTileEntity",
+    "client/MixinRenderBlocks",
+    "client/MixinEntityRenderer",
+    "client/MixinNetHandlerPlayClient"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}

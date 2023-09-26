@@ -1,0 +1,394 @@
+import org.gradle.internal.xml.XmlTransformer
+import org.jetbrains.gradle.ext.Gradle
+
+buildscript {
+    repositories {
+        mavenCentral()
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+
+        maven {
+            name 'forge'
+            url 'https://maven.minecraftforge.net'
+        }
+        maven {
+            // GTNH RetroFuturaGradle and ASM Fork
+            name "GTNH Maven"
+            url "http://jenkins.usrv.eu:8081/nexus/content/groups/public/"
+            allowInsecureProtocol = true
+        }
+        maven {
+            name 'sonatype'
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+        maven {
+            name 'Scala CI dependencies'
+            url 'https://repo1.maven.org/maven2/'
+        }
+
+        //mavenLocal()
+    }
+}
+
+plugins {
+    id 'java-library'
+	id 'eclipse'
+    id 'com.gtnewhorizons.retrofuturagradle' version '1.3.+'
+	id "org.jetbrains.gradle.plugin.idea-ext" version "1.1.7"
+  //  id 'com.modrinth.minotaur' version '2.+'// apply false
+    id 'net.darkhax.curseforgegradle' version '1.0.11'
+}
+
+def fileVersion = "1.0.0"
+
+version = "1.7.10-$fileVersion"
+
+sourceCompatibility = targetCompatibility = '1.8'
+
+group = "net.jomcraft.frustrator"
+
+archivesBaseName = "Frustrator"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+        vendor.set(JvmVendorSpec.AZUL)
+    }
+    withSourcesJar()
+}
+
+def getFile(String relativePath) {
+    return new File(projectDir, relativePath)
+}
+
+final String modGroupPath = group.replace('.' as char, '/' as char)
+
+def accessTransformersFile = "frustrator_at.cfg"
+
+if (accessTransformersFile) {
+    for (atFile in accessTransformersFile.split(",")) {
+        String targetFile = "src/main/resources/META-INF/" + atFile.trim()
+        if (!getFile(targetFile).exists()) {
+            throw new GradleException("Could not resolve \"accessTransformersFile\"! Could not find " + targetFile)
+        }
+        tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(targetFile)
+        tasks.srgifyBinpatchedJar.accessTransformerFiles.from(targetFile)
+    }
+} else {
+    boolean atsFound = false
+    for (File at : sourceSets.getByName("main").resources.files) {
+        if (at.name.toLowerCase().endsWith("_at.cfg")) {
+            atsFound = true
+            tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
+            tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
+        }
+    }
+    for (File at : sourceSets.getByName("api").resources.files) {
+        if (at.name.toLowerCase().endsWith("_at.cfg")) {
+            atsFound = true
+            tasks.deobfuscateMergedJarToSrg.accessTransformerFiles.from(at)
+            tasks.srgifyBinpatchedJar.accessTransformerFiles.from(at)
+        }
+    }
+    if (atsFound) {
+        logger.warn("Found and added access transformers in the resources folder, please configure gradle.properties to explicitly mention them by name")
+    }
+}
+
+String javaSourceDir = "src/main/java/"
+
+final String mixinPackagePath = "mixins"
+final String mixinPluginPath = "plugin"
+
+String targetPackageJava = javaSourceDir + modGroupPath + "/" + mixinPackagePath
+if (!(getFile(targetPackageJava).exists())) {
+    throw new GradleException("Could not resolve \"mixinsPackage\"! Could not find " + targetPackageJava)
+}
+
+/*if (!mixinPlugin.isEmpty()) {
+    String targetFileJava = javaSourceDir + modGroupPath + "/" + mixinPluginPath + ".java"
+    if (!(getFile(targetFileJava).exists())) {
+        throw new GradleException("Could not resolve \"mixinPlugin\"! Could not find " + targetFileJava)
+    }
+}*/
+
+def replaceGradleTokenInFile = "Frustrator.java"
+
+minecraft {
+	if (replaceGradleTokenInFile) {
+        for (f in replaceGradleTokenInFile.split(',')) {
+            tagReplacementFiles.add f
+        }
+    }
+
+    injectedTags.put "F-VERSION", fileVersion
+
+    //Random username generation
+    username = ""
+
+    extraRunJvmArguments.add("-ea:${group}")
+
+    groupsToExcludeFromAutoReobfMapping.addAll(["com.diffplug", "com.diffplug.durian", "net.industrial-craft"])
+}
+
+eclipse {
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+def mixinProviderGroup = "io.github.legacymoddingmc"
+def mixinProviderModule = "unimixins"
+def mixinProviderVersion = "0.1.11"
+def mixinProviderSpecNoClassifer = "${mixinProviderGroup}:${mixinProviderModule}:${mixinProviderVersion}"
+def mixinProviderSpec = "${mixinProviderSpecNoClassifer}:dev"
+ext.mixinProviderSpec = mixinProviderSpec
+
+def mixingConfigRefMap = 'mixins.frustrator.refmap.json'
+
+repositories {
+    maven {
+        name 'Overmind forge repo mirror'
+        url 'https://gregtech.overminddl1.com/'
+    }
+    maven {
+        name = "GTNH Maven"
+        url = "http://jenkins.usrv.eu:8081/nexus/content/groups/public/"
+        allowInsecureProtocol = true
+    }
+    maven {
+        name 'sonatype'
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        content {
+            includeGroup "org.lwjgl"
+        }
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name "CurseMaven"
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
+        name = "ic2"
+        url = "https://maven.ic2.player.to/"
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    maven {
+        name = "ic2-mirror"
+        url = "https://maven2.ic2.player.to/"
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    maven {
+        name "MMD Maven"
+        url "https://maven.mcmoddev.com/"
+    }
+}
+
+dependencies {
+    annotationProcessor('org.ow2.asm:asm-debug-all:5.0.3')
+    annotationProcessor('com.google.guava:guava:24.1.1-jre')
+    annotationProcessor('com.google.code.gson:gson:2.8.6')
+    annotationProcessor(mixinProviderSpec)
+    implementation(modUtils.enableMixins(mixinProviderSpec, mixingConfigRefMap))
+
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+jar {
+	exclude('com/carpentersblocks/**')
+	manifest {
+        attributes("FMLCorePluginContainsFMLMod": "true")
+        attributes("FMLAT": "frustrator_at.cfg")
+        attributes("TweakClass": "org.spongepowered.asm.launch.MixinTweaker")
+        attributes("MixinConfigs": "mixins.frustrator.json")
+        attributes("ForceLoadAsMod": true)
+    }
+}
+
+processResources
+{
+	duplicatesStrategy = 'include'
+
+    inputs.property "version", fileVersion
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+
+        expand 'version':fileVersion, 'mcversion':project.minecraft.version
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+        inheritOutputDirs = true
+    }
+    project {
+        settings {
+			delegateActions {
+                //if ("gradle".equalsIgnoreCase(ideaOverrideBuildType)) {
+               //     delegateBuildRunToGradle = true
+                //    testRunner = org.jetbrains.gradle.ext.ActionDelegationConfig.TestRunner.GRADLE
+                //} else if ("idea".equalsIgnoreCase(ideaOverrideBuildType)) {
+                    delegateBuildRunToGradle = false
+                    testRunner = org.jetbrains.gradle.ext.ActionDelegationConfig.TestRunner.PLATFORM
+                //} else {
+               //     throw GradleScriptException('Accepted value for ideaOverrideBuildType is one of gradle or idea.')
+               // }
+            }
+            runConfigurations {
+                /*"0. Build and Test"(Gradle) {
+                    taskNames = ["build"]
+                }*/
+                "1. Run Client"(Gradle) {
+                    taskNames = ["runClient"]
+                }
+                "2. Run Server"(Gradle) {
+                    taskNames = ["runServer"]
+                }
+            }
+            compiler.javac {
+                afterEvaluate {
+                    javacAdditionalOptions = "-encoding utf8"
+                    moduleJavacAdditionalOptions = [
+                        (project.name + ".main"): tasks.compileJava.options.compilerArgs.collect { '"' + it + '"' }.join(' ')
+                    ]
+                }
+            }
+            withIDEADir { File ideaDir ->
+                if (!ideaDir.path.contains(".idea")) {
+                    // If an .ipr file exists, the project root directory is passed here instead of the .idea subdirectory
+                    ideaDir = new File(ideaDir, ".idea")
+                }
+                if (ideaDir.isDirectory()) {
+                    def miscFile = new File(ideaDir, "misc.xml")
+                    if (miscFile.isFile()) {
+                        boolean dirty = false
+                        def miscTransformer = new XmlTransformer()
+                        miscTransformer.addAction { root ->
+                            Node rootNode = root.asNode()
+                            def rootManager = rootNode
+                                .component.find { it.@name == 'ProjectRootManager' }
+                            if (!rootManager) {
+                                rootManager = rootNode.appendNode('component', ['name': 'ProjectRootManager', 'version': '2'])
+                                dirty = true
+                            }
+                            def output = rootManager.output
+                            if (!output) {
+                                output = rootManager.appendNode('output')
+                                dirty = true
+                            }
+                            if (!output.@url) {
+                                // Only modify the output url if it doesn't yet have one, or if the existing one is blank somehow.
+                                // This is a sensible default for most setups
+                                output.@url = 'file://$PROJECT_DIR$/build/ideaBuild'
+                                dirty = true
+                            }
+                        }
+                        def result = miscTransformer.transform(miscFile.text)
+                        if (dirty) {
+                            miscFile.write(result)
+                        }
+                    } else {
+                        miscFile.text = """<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectRootManager" version="2">
+    <output url="file://\$PROJECT_DIR\$/out" />
+  </component>
+</project>
+"""
+                    }
+                }
+            }
+        }
+    }
+}
+
+def getAdditionalArtifacts() {
+    project.logger.info(System.getenv("MODRINTH_TOKEN"))
+    def secondaryArtifacts = [publishableDevJar, sourcesJar]
+  //  if (!noPublishedSources) secondaryArtifacts += [sourcesJar]
+   // if (apiPackage) secondaryArtifacts += [apiJar]
+    return secondaryArtifacts
+}
+
+ext.publishableDevJar = tasks.jar
+ext.publishableObfJar = tasks.reobfJar
+
+task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    if (System.getenv("CURSE_API") != null && !System.getenv("CURSE_API").equals("")) {
+        disableVersionDetection()
+        apiToken = System.getenv("CURSE_API")
+
+        def mainFile = upload(916870, /*jar*/publishableObfJar)
+        mainFile.releaseType = 'beta'
+        mainFile.displayName = "$archivesBaseName-$version"
+        mainFile.changelogType = 'html'
+        mainFile.changelog = file('changelog.html')
+        mainFile.addRequirement('unimixins')
+        mainFile.addModLoader('Forge')
+        mainFile.addJavaVersion('Java 8')
+        mainFile.addGameVersion('1.7.10')
+
+        def sourcesFile = mainFile.withAdditionalFile(sourcesJar)
+        sourcesFile.changelog = file('changelog.html')
+        sourcesFile.addRequirement('unimixins')
+        sourcesFile.displayName = "$archivesBaseName-$version-sources"
+
+        def devFile = mainFile.withAdditionalFile(publishableDevJar)
+        devFile.changelog = file('changelog.html')
+        devFile.addRequirement('unimixins')
+        devFile.displayName = "$archivesBaseName-$version-dev"
+    }
+}
+
+/*modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "frustrator"
+    versionNumber = "$version"
+    versionType = "beta"
+    uploadFile = publishableObfJar
+    gameVersions = ["1.7.10"]
+    loaders = ["forge"]
+    additionalFiles = getAdditionalArtifacts()
+    dependencies {
+        required.project "unimixins"
+    }
+}
+
+tasks.modrinth.dependsOn(build)*/
+
+tasks.publishCurseForge.dependsOn(build)

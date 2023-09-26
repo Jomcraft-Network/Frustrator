@@ -1,0 +1,15 @@
+[
+{
+  "modid": "frustrator",
+  "name": "Frustrator",
+  "description": "Frustrator mod Forge 1.7.10 rendering mod",
+  "credits": "Developed by Jomcraft Network",
+  "logoFile": "logo.png",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": [ "Jomcraft Network" ],
+  "screenshots": []
+}
+]
