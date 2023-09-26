@@ -338,7 +338,7 @@ idea {
 }
 
 def getAdditionalArtifacts() {
-    project.logger.info(System.getenv("MODRINTH_TOKEN"))
+    //project.logger.info(System.getenv("MODRINTH_TOKEN"))
     def secondaryArtifacts = [publishableDevJar, sourcesJar]
   //  if (!noPublishedSources) secondaryArtifacts += [sourcesJar]
    // if (apiPackage) secondaryArtifacts += [apiJar]

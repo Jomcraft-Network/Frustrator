@@ -69,7 +69,6 @@ public class ItemFrustrator extends Item {
     public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer player) {
         if (worldIn.isRemote) {
             MovingObjectPosition movingobjectposition = this.getMovingObjectPositionFromPlayer(worldIn, player, true);
-            System.out.println(ClientEventHandler.focusedFrustum == null ? "null" : ClientEventHandler.focusedFrustum.toString());
             if (movingobjectposition == null) {
                 if (itemStackIn.getItemDamage() == 0) {
                     if (ClientEventHandler.focusedFrustum == null) {
@@ -92,7 +91,6 @@ public class ItemFrustrator extends Item {
                                 pos1 = null;
                                 pos2 = null;
                             }
-
                         }
                     } else {
                         ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
