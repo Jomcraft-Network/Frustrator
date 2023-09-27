@@ -79,11 +79,17 @@ public class ClientEventHandler {
 
             final FrustumBounds frustum = ((IMixinEntity) event.entity).getFrustum();
             if(frustum != null) {
+                boolean success = false;
                 for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
                     final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
-                    if (!frustum.equalsArea(localFrustum)) {
-                        event.setCanceled(true);
+                    if (frustum.equalsArea(localFrustum)) {
+                        success = true;
+                        break;
                     }
+                }
+
+                if(!success) {
+                    event.setCanceled(true);
                 }
             }
         }
@@ -183,6 +189,7 @@ public class ClientEventHandler {
                             dummyFrustums.add(frustum);
 
                         inFrustum = true;
+                        //TODO: Change this!
                         break;
                     }
                 }
@@ -201,7 +208,7 @@ public class ClientEventHandler {
                             }
 
                             inFrustum = true;
-                            break;
+                            //break;
                         }
                     }
                 }
@@ -215,6 +222,12 @@ public class ClientEventHandler {
 
                     localFrustums.clear();
                 } else {
+                    for(int i = 0; i < localFrustums.size(); i++){
+                        final FrustumBounds frustum = localFrustums.get(i);
+                        if(!dummyFrustums.contains(frustum))
+                            Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
+                    }
+
                     localFrustums = dummyFrustums;
                 }
             }
@@ -250,7 +263,7 @@ public class ClientEventHandler {
                     GL11.glLineWidth(3.0F);
                 }
             }
-            if (showAllTriggerAreas) {
+            if (showAllTriggerAreas || selectedTrigger != null) {
                 GL11.glColor4f(1.0F, 1.0F, 0.0F, 0.8F);
                 for (int i = 0; i < triggerBounds.length; i++) {
                     final FrustumBounds frustum = triggerBounds[i];

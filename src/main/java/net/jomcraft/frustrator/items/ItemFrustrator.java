@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.Frustrator;
+import net.jomcraft.frustrator.network.C2SAddTriggerPacket;
 import net.jomcraft.frustrator.network.C2SDeleteAreaPacket;
 import net.jomcraft.frustrator.network.C2SNewAreaPacket;
 import net.jomcraft.frustrator.network.C2SResizeAreaPacket;
@@ -93,9 +94,20 @@ public class ItemFrustrator extends Item {
                             }
                         }
                     } else {
-                        ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
-                        pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.minX, ClientEventHandler.selectedFrustum.minY, ClientEventHandler.selectedFrustum.minZ);
-                        pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.maxX, ClientEventHandler.selectedFrustum.maxY, ClientEventHandler.selectedFrustum.maxZ);
+
+                        if(ClientEventHandler.focusedFrustum != null && ClientEventHandler.selectedFrustum == null && ClientEventHandler.selectedTrigger != null) {
+                            System.out.println("CONFIRM!");
+                            Frustrator.network.sendToServer(new C2SAddTriggerPacket(Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.minX, ClientEventHandler.focusedFrustum.minY, ClientEventHandler.focusedFrustum.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.maxX, ClientEventHandler.focusedFrustum.maxY, ClientEventHandler.focusedFrustum.maxZ)));
+                           // ClientEventHandler.selectedTrigger = null;
+                        //    pos1 = null;
+                           // pos2 = null;
+                        }
+                        //} else {
+                            ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
+                            pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.minX, ClientEventHandler.selectedFrustum.minY, ClientEventHandler.selectedFrustum.minZ);
+                            pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.maxX, ClientEventHandler.selectedFrustum.maxY, ClientEventHandler.selectedFrustum.maxZ);
+                      //  }
+
                     }
 
                     return itemStackIn;
