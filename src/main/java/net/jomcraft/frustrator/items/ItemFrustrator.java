@@ -96,7 +96,7 @@ public class ItemFrustrator extends Item {
                     } else {
 
                         if(ClientEventHandler.focusedFrustum != null && ClientEventHandler.selectedFrustum == null && ClientEventHandler.selectedTrigger != null) {
-                            System.out.println("CONFIRM!");
+                           // System.out.println("CONFIRM!");
                             Frustrator.network.sendToServer(new C2SAddTriggerPacket(Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.minX, ClientEventHandler.focusedFrustum.minY, ClientEventHandler.focusedFrustum.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.maxX, ClientEventHandler.focusedFrustum.maxY, ClientEventHandler.focusedFrustum.maxZ)));
                            // ClientEventHandler.selectedTrigger = null;
                         //    pos1 = null;
