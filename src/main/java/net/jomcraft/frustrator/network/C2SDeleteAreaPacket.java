@@ -9,7 +9,9 @@ import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.Vec3;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class C2SDeleteAreaPacket implements IMessage {
@@ -73,9 +75,27 @@ public class C2SDeleteAreaPacket implements IMessage {
                 if (!trigger) {
                     for (int i = 0; i < bounds.size(); i++) {
                         final FrustumBounds frustum = bounds.get(i);
+                        if (frustum.parents.length < 2) {
+                            for (int ii = 0; ii < frustum.parents.length; ii++) {
+                                final FrustumBounds parent = frustum.parents[ii];
+                                if (frustum.trigger && parent.minX == message.min.xCoord && parent.minY == message.min.yCoord && parent.minZ == message.min.zCoord && parent.maxX == message.max.xCoord && parent.maxY == message.max.yCoord && parent.maxZ == message.max.zCoord) {
+                                    toRemoveTriggers.add(frustum);
+                                }
+                            }
+                        } else {
+                            ArrayList<FrustumBounds> removeParents = new ArrayList<FrustumBounds>();
+                            for (int ii = 0; ii < frustum.parents.length; ii++) {
+                                final FrustumBounds parent = frustum.parents[ii];
+                                if (frustum.trigger && parent.minX == message.min.xCoord && parent.minY == message.min.yCoord && parent.minZ == message.min.zCoord && parent.maxX == message.max.xCoord && parent.maxY == message.max.yCoord && parent.maxZ == message.max.zCoord) {
+                                    removeParents.add(parent);
+                                }
+                            }
+                            ArrayList<FrustumBounds> originalParents = new ArrayList<FrustumBounds>(Arrays.asList(frustum.parents));
+                            for (FrustumBounds toRemove : removeParents) {
+                                originalParents.remove(toRemove);
+                            }
+                            frustum.parents = originalParents.toArray(new FrustumBounds[originalParents.size()]);
 
-                        if (frustum.trigger && frustum.parent.minX == message.min.xCoord && frustum.parent.minY == message.min.yCoord && frustum.parent.minZ == message.min.zCoord && frustum.parent.maxX == message.max.xCoord && frustum.parent.maxY == message.max.yCoord && frustum.parent.maxZ == message.max.zCoord) {
-                            toRemoveTriggers.add(frustum);
                         }
                     }
 

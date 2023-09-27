@@ -4,14 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import net.jomcraft.frustrator.Frustrator;
+import net.jomcraft.frustrator.FrustumBounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraftforge.common.DimensionManager;
 import org.apache.logging.log4j.Level;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FileManager {
 
@@ -30,19 +34,40 @@ public class FileManager {
             initJSON();
 
         } else {
-            //READJson
             File frustratorFile = new File(frustratorFolder, "frustums.json");
             if (frustratorFile.exists()) {
 
                 try (Reader reader = new FileReader(frustratorFile)) {
                     frustumJson = gson.fromJson(reader, FrustumJSON.class);
 
+                    for (Integer dim : frustumJson.getFrustumMap().keySet()) {
+                        ArrayList<FrustumBounds> list = frustumJson.getFrustumMap().get(dim);
+                        for (FrustumBounds frustum : list) {
+                            if (frustum.parent != null) {
+                                ArrayList<FrustumBounds> parents;
+                                if(frustum.parents != null){
+                                     parents = new ArrayList<FrustumBounds>(Arrays.asList(frustum.parents));
+                                } else {
+                                    parents = new ArrayList<FrustumBounds>();
+                                }
+                                parents.add(frustum.parent);
+                                frustum.parent = null;
+                                frustum.parents = parents.toArray(new FrustumBounds[parents.size()]);
+                            }
+
+                            if(frustum.parents == null){
+                                frustum.parents = new FrustumBounds[0];
+                            }
+                        }
+                    }
+                    frustumJson.save();
+
                 } catch (Exception e) {
                     Frustrator.log.log(Level.ERROR, "Exception while reading frustum file: ", e);
-                    if (e instanceof JsonSyntaxException) {
+                   // if (e instanceof JsonSyntaxException) {
                         frustratorFile.renameTo(new File(frustratorFolder, "frustums_malformed.json"));
                         initJSON();
-                    }
+                   // }
                 }
 
             } else {
@@ -53,6 +78,7 @@ public class FileManager {
     }
 
     public static void deinitialize() {
+        getFrustumJSON().save();
         frustumJson = null;
     }
 

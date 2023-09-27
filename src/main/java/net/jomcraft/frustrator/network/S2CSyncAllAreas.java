@@ -41,11 +41,16 @@ public class S2CSyncAllAreas implements IMessage {
             final int maxY = buf.readInt();
             final int maxZ = buf.readInt();
             final boolean trigger = buf.readBoolean();
-            FrustumBounds parent = null;
-            if (trigger)
-                parent = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null);
+            FrustumBounds[] parents = null;
+            if (trigger) {
+                int parentLength = buf.readInt();
+                parents = new FrustumBounds[parentLength];
+                for(int i = 0; i < parentLength; i++){
+                    parents[i] = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null);
+                }
+            }
 
-            frustums[x] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parent);
+            frustums[x] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents);
         }
 
         this.frustums = frustums;
@@ -68,12 +73,16 @@ public class S2CSyncAllAreas implements IMessage {
             buf.writeInt(frustum.maxZ);
             buf.writeBoolean(frustum.trigger);
             if (frustum.trigger) {
-                buf.writeInt(frustum.parent.minX);
-                buf.writeInt(frustum.parent.minY);
-                buf.writeInt(frustum.parent.minZ);
-                buf.writeInt(frustum.parent.maxX);
-                buf.writeInt(frustum.parent.maxY);
-                buf.writeInt(frustum.parent.maxZ);
+                buf.writeInt(frustum.parents.length);
+                for(int i = 0; i < frustum.parents.length; i++) {
+                    final FrustumBounds parent = frustum.parents[i];
+                    buf.writeInt(parent.minX);
+                    buf.writeInt(parent.minY);
+                    buf.writeInt(parent.minZ);
+                    buf.writeInt(parent.maxX);
+                    buf.writeInt(parent.maxY);
+                    buf.writeInt(parent.maxZ);
+                }
             }
         }
         buf.writeBoolean(this.shouldUpdate);

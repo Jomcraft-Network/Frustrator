@@ -15,6 +15,8 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import org.lwjgl.opengl.GL11;
 import javax.annotation.Nullable;
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClientEventHandler {
@@ -23,8 +25,7 @@ public class ClientEventHandler {
 
     public static FrustumBounds[] triggerBounds = new FrustumBounds[0];
 
-    @Nullable
-    public static FrustumBounds localFrustum = null;
+    public static ArrayList<FrustumBounds> localFrustums = new ArrayList<FrustumBounds>();
 
     public int ticker = 0;
 
@@ -77,9 +78,19 @@ public class ClientEventHandler {
                 return;
 
             final FrustumBounds frustum = ((IMixinEntity) event.entity).getFrustum();
+            if(frustum != null) {
+                boolean success = false;
+                for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
+                    final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
+                    if (frustum.equalsArea(localFrustum)) {
+                        success = true;
+                        break;
+                    }
+                }
 
-            if (frustum != null && !frustum.equalsArea(ClientEventHandler.localFrustum)) {
-                event.setCanceled(true);
+                if(!success) {
+                    event.setCanceled(true);
+                }
             }
         }
     }
@@ -167,14 +178,18 @@ public class ClientEventHandler {
 
                 boolean inFrustum = false;
 
+                final ArrayList<FrustumBounds> dummyFrustums = new ArrayList<FrustumBounds>();
+
                 for (int i = 0; i < frustumBounds.length; i++) {
                     final FrustumBounds frustum = frustumBounds[i];
                     if (frustumCheck(x, y, z, frustum)) {
-                        if (localFrustum == null)
+                        if (!localFrustums.contains(frustum)) {
                             Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
+                        }
+                            dummyFrustums.add(frustum);
 
-                        localFrustum = frustum;
                         inFrustum = true;
+                        //TODO: Change this!
                         break;
                     }
                 }
@@ -183,21 +198,37 @@ public class ClientEventHandler {
                     for (int i = 0; i < triggerBounds.length; i++) {
                         final FrustumBounds trigger = triggerBounds[i];
                         if (frustumCheck(x, y, z, trigger)) {
-                            if (localFrustum == null)
-                                Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(trigger.parent.minX - 1, trigger.parent.minY - 1, trigger.parent.minZ - 1, trigger.parent.maxX + 1, trigger.parent.maxY + 1, trigger.parent.maxZ + 1);
+                            for(int ii = 0; ii < trigger.parents.length; ii++){
+                                final FrustumBounds parent = trigger.parents[ii];
+                                if(!localFrustums.contains(parent)) {
+                                    Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(parent.minX - 1, parent.minY - 1, parent.minZ - 1, parent.maxX + 1, parent.maxY + 1, parent.maxZ + 1);
+                                }
+                                    dummyFrustums.add(parent);
 
-                            localFrustum = trigger.parent;
+                            }
+
                             inFrustum = true;
-                            break;
+                            //break;
                         }
                     }
                 }
 
                 if (!inFrustum) {
-                    if (localFrustum != null)
-                        Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(localFrustum.minX - 1, localFrustum.minY - 1, localFrustum.minZ - 1, localFrustum.maxX + 1, localFrustum.maxY + 1, localFrustum.maxZ + 1);
 
-                    localFrustum = null;
+                    for(int i = 0; i < localFrustums.size(); i++){
+                        final FrustumBounds frustum = localFrustums.get(i);
+                        Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
+                    }
+
+                    localFrustums.clear();
+                } else {
+                    for(int i = 0; i < localFrustums.size(); i++){
+                        final FrustumBounds frustum = localFrustums.get(i);
+                        if(!dummyFrustums.contains(frustum))
+                            Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
+                    }
+
+                    localFrustums = dummyFrustums;
                 }
             }
         }
@@ -232,7 +263,7 @@ public class ClientEventHandler {
                     GL11.glLineWidth(3.0F);
                 }
             }
-            if (showAllTriggerAreas) {
+            if (showAllTriggerAreas || selectedTrigger != null) {
                 GL11.glColor4f(1.0F, 1.0F, 0.0F, 0.8F);
                 for (int i = 0; i < triggerBounds.length; i++) {
                     final FrustumBounds frustum = triggerBounds[i];
@@ -256,7 +287,17 @@ public class ClientEventHandler {
 
                     final FrustumBounds frustum = triggerBounds[i];
 
-                    if (!frustum.parent.equalsArea(selectedFrustum))
+                    boolean isTrigger = false;
+
+                    for(int ii = 0; ii < frustum.parents.length; ii++){
+                        final FrustumBounds parent = frustum.parents[ii];
+                        if (parent.equalsArea(selectedFrustum)) {
+                            isTrigger = true;
+                            break;
+                        }
+                    }
+
+                    if (!isTrigger)
                         continue;
 
                     if (frustum == focusedTrigger || frustum == selectedTrigger)

@@ -76,7 +76,7 @@ public class C2SResizeAreaPacket implements IMessage {
 
                 Integer index = null;
                 boolean trigger = false;
-                FrustumBounds parent = null;
+                FrustumBounds[] parents = null;
 
                 for (int i = 0; i < bounds.size(); i++) {
                     final FrustumBounds frustum = bounds.get(i);
@@ -84,21 +84,23 @@ public class C2SResizeAreaPacket implements IMessage {
                     if (frustum.minX == message.oldPos1.xCoord && frustum.minY == message.oldPos1.yCoord && frustum.minZ == message.oldPos1.zCoord && frustum.maxX == message.oldPos2.xCoord && frustum.maxY == message.oldPos2.yCoord && frustum.maxZ == message.oldPos2.zCoord) {
                         index = i;
                         trigger = frustum.trigger;
-                        parent = frustum.parent;
+                        parents = frustum.parents;
                         break;
                     }
                 }
 
                 if (index != null) {
-                    bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parent));
+                    bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents));
                 }
 
                 if (!trigger) {
                     for (int i = 0; i < bounds.size(); i++) {
                         final FrustumBounds frustum = bounds.get(i);
-
-                        if (frustum.trigger && frustum.parent.minX == message.oldPos1.xCoord && frustum.parent.minY == message.oldPos1.yCoord && frustum.parent.minZ == message.oldPos1.zCoord && frustum.parent.maxX == message.oldPos2.xCoord && frustum.parent.maxY == message.oldPos2.yCoord && frustum.parent.maxZ == message.oldPos2.zCoord) {
-                            frustum.parent = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, false, null);
+                        for(int ii = 0; ii < frustum.parents.length; ii++) {
+                            final FrustumBounds parent = frustum.parents[ii];
+                            if (frustum.trigger && parent.minX == message.oldPos1.xCoord && parent.minY == message.oldPos1.yCoord && parent.minZ == message.oldPos1.zCoord && parent.maxX == message.oldPos2.xCoord && parent.maxY == message.oldPos2.yCoord && parent.maxZ == message.oldPos2.zCoord) {
+                                frustum.parents[ii] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, false, null);
+                            }
                         }
                     }
                 }

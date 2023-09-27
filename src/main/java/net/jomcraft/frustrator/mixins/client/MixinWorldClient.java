@@ -24,8 +24,25 @@ public class MixinWorldClient {
         for (int i = 0; i < ClientEventHandler.frustumBounds.length; i++) {
             final FrustumBounds frustum = ClientEventHandler.frustumBounds[i];
             if (ClientEventHandler.frustumCheck(xCoord, yCoord, zCoord, frustum)) {
-                if (!frustum.equalsArea(ClientEventHandler.localFrustum))
+
+                if(ClientEventHandler.localFrustums.isEmpty()){
                     info.cancel();
+                    return;
+                }
+
+                boolean success = false;
+                for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
+                    final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
+                    if (frustum.equalsArea(localFrustum)) {
+                        success = true;
+                        break;
+                    }
+                }
+
+                if(!success) {
+                    info.cancel();
+                    return;
+                }
             }
         }
     }

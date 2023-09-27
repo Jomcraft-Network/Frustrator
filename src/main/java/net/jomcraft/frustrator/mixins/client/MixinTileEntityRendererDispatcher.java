@@ -19,10 +19,27 @@ public class MixinTileEntityRendererDispatcher {
             return;
 
         final FrustumBounds frustum = ((IMixinEntity) p_147549_1_).getFrustum();
+        if (frustum != null) {
 
-        if (frustum != null && !frustum.equalsArea(ClientEventHandler.localFrustum)) {
-            info.cancel();
-            return;
+            if(ClientEventHandler.localFrustums.isEmpty()){
+                info.cancel();
+                return;
+            }
+
+            boolean success = false;
+            for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
+                final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
+
+                if (frustum.equalsArea(localFrustum)) {
+                    success = true;
+                    break;
+                }
+            }
+
+            if(!success) {
+                info.cancel();
+                return;
+            }
         }
     }
 }
