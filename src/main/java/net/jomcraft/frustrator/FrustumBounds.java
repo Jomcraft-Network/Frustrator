@@ -1,5 +1,7 @@
 package net.jomcraft.frustrator;
 
+import com.google.gson.annotations.SerializedName;
+
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
@@ -16,9 +18,10 @@ public class FrustumBounds {
     public final boolean trigger;
 
     @Nullable
+    @Deprecated
+    public FrustumBounds parent;
+
     public FrustumBounds [] parents;
-    //public FrustumBounds parent;
-    //TODO: Allow for more parents!!!!
 
     public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds [] parents) {
         this.minX = minX;
