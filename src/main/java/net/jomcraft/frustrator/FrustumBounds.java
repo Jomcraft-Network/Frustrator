@@ -1,6 +1,7 @@
 package net.jomcraft.frustrator;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 public class FrustumBounds {
 
@@ -15,9 +16,11 @@ public class FrustumBounds {
     public final boolean trigger;
 
     @Nullable
-    public FrustumBounds parent;
+    public FrustumBounds [] parents;
+    //public FrustumBounds parent;
+    //TODO: Allow for more parents!!!!
 
-    public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds parent) {
+    public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds [] parents) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;
@@ -25,7 +28,7 @@ public class FrustumBounds {
         this.maxY = maxY;
         this.maxZ = maxZ;
         this.trigger = trigger;
-        this.parent = parent;
+        this.parents = parents;
     }
 
     public boolean equalsArea(FrustumBounds frustum) {
@@ -39,6 +42,6 @@ public class FrustumBounds {
 
     @Override
     public String toString() {
-        return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]; isTrigger: " + this.trigger + " Parent: " + (this.parent == null ? "no parent" : this.parent.toString());
+        return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]; isTrigger: " + this.trigger + " Parent: " + (this.parents == null ? "no parents" : Arrays.stream(this.parents).toString());
     }
 }

@@ -41,9 +41,27 @@ public class MixinTileEntity implements IMixinEntity {
             if (ClientEventHandler.showAllMainAreas)
                 return;
 
-            if (this.frustumBounds != null && !this.frustumBounds.equalsArea(ClientEventHandler.localFrustum)) {
-                info.cancel();
-                return;
+            if(this.frustumBounds != null) {
+
+                if(ClientEventHandler.localFrustums.isEmpty()){
+                    info.cancel();
+                    return;
+                }
+
+                boolean success = false;
+                for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
+                    final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
+
+                    if (this.frustumBounds.equalsArea(localFrustum)) {
+                        success = true;
+                        break;
+                    }
+                }
+
+                if(!success) {
+                    info.cancel();
+                    return;
+                }
             }
         }
     }

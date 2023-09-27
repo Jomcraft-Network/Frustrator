@@ -91,13 +91,13 @@ public class C2SNewAreaPacket implements IMessage {
                 }
 
                 if (index == null) {
-                    bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, message.parent));
+                    bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[] {message.parent}));
                     FileManager.getFrustumJSON().save();
                     Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)));
                 }
             } else {
                 bounds = new ArrayList<FrustumBounds>();
-                bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, message.parent));
+                bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[] {message.parent}));
 
                 dimMap.put(player.worldObj.provider.dimensionId, bounds);
                 FileManager.getFrustumJSON().save();

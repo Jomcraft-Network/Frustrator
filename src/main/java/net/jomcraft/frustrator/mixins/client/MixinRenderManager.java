@@ -24,12 +24,30 @@ public class MixinRenderManager {
         if (entityFrustum == null)
             return false;
 
-        if (!entityFrustum.equalsArea(ClientEventHandler.localFrustum) && !(p_147939_1_ instanceof EntityPlayer)) {
-            info.setReturnValue(false);
-            info.cancel();
+        if (!(p_147939_1_ instanceof EntityPlayer)) {
+
+            if(ClientEventHandler.localFrustums.isEmpty()) {
+                info.setReturnValue(false);
+                info.cancel();
+                return false;
+            }
+
+            boolean success = false;
+            for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
+                final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
+                if (entityFrustum.equalsArea(localFrustum)) {
+                    success = true;
+                    break;
+                }
+            }
+
+            if(!success) {
+                info.setReturnValue(false);
+                info.cancel();
+                return false;
+            }
         }
 
         return false;
     }
-
 }

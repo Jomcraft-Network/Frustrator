@@ -20,12 +20,30 @@ public class MixinRenderBlocks {
         for (int a = 0; a < ClientEventHandler.frustumBounds.length; a++) {
             final FrustumBounds frustum = ClientEventHandler.frustumBounds[a];
 
-            if (ClientEventHandler.frustumCheck(p_147805_2_, p_147805_3_, p_147805_4_, frustum) && !frustum.equalsArea(ClientEventHandler.localFrustum)) {
-                info.setReturnValue(false);
-                info.cancel();
+            if (ClientEventHandler.frustumCheck(p_147805_2_, p_147805_3_, p_147805_4_, frustum)) {
+
+                if(ClientEventHandler.localFrustums.isEmpty()){
+                    info.setReturnValue(false);
+                    info.cancel();
+                    return false;
+                }
+
+                boolean success = false;
+                for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
+                    final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
+                    if (frustum.equalsArea(localFrustum)) {
+                        success = true;
+                        break;
+                    }
+                }
+
+                if(!success) {
+                    info.setReturnValue(false);
+                    info.cancel();
+                    return false;
+                }
             }
         }
         return false;
     }
-
 }
