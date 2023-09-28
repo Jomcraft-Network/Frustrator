@@ -41,7 +41,7 @@ plugins {
     id 'net.darkhax.curseforgegradle' version '1.0.11'
 }
 
-def fileVersion = "1.0.7"
+def fileVersion = "1.1.0"
 
 version = "1.7.10-$fileVersion"
 
@@ -354,7 +354,7 @@ task publishCurseForge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge)
         apiToken = System.getenv("CURSE_API")
 
         def mainFile = upload(916870, /*jar*/publishableObfJar)
-        mainFile.releaseType = 'beta'
+        mainFile.releaseType = 'release'
         mainFile.displayName = "$archivesBaseName-$version"
         mainFile.changelogType = 'html'
         mainFile.changelog = file('changelog.html')
