@@ -4,10 +4,14 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 
 import java.util.ArrayList;
@@ -70,6 +74,9 @@ public class C2SDeleteAreaPacket implements IMessage {
 
                 if (index != null) {
                     bounds.remove((int) index);
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.delete.success", new Object[]{(trigger ? "trigger" : "main")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                } else {
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.delete.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
 
                 if (!trigger) {
@@ -83,13 +90,7 @@ public class C2SDeleteAreaPacket implements IMessage {
                                 }
                             }
                         } else {
-                            ArrayList<FrustumBounds> removeParents = new ArrayList<FrustumBounds>();
-                            for (int ii = 0; ii < frustum.parents.length; ii++) {
-                                final FrustumBounds parent = frustum.parents[ii];
-                                if (frustum.trigger && parent.minX == message.min.xCoord && parent.minY == message.min.yCoord && parent.minZ == message.min.zCoord && parent.maxX == message.max.xCoord && parent.maxY == message.max.yCoord && parent.maxZ == message.max.zCoord) {
-                                    removeParents.add(parent);
-                                }
-                            }
+                            ArrayList<FrustumBounds> removeParents = getFrustumBounds(message, frustum);
                             ArrayList<FrustumBounds> originalParents = new ArrayList<FrustumBounds>(Arrays.asList(frustum.parents));
                             for (FrustumBounds toRemove : removeParents) {
                                 originalParents.remove(toRemove);
@@ -110,6 +111,17 @@ public class C2SDeleteAreaPacket implements IMessage {
 
             }
             return null;
+        }
+
+        private static ArrayList<FrustumBounds> getFrustumBounds(C2SDeleteAreaPacket message, FrustumBounds frustum) {
+            final ArrayList<FrustumBounds> removeParents = new ArrayList<FrustumBounds>();
+            for (int ii = 0; ii < frustum.parents.length; ii++) {
+                final FrustumBounds parent = frustum.parents[ii];
+                if (frustum.trigger && parent.minX == message.min.xCoord && parent.minY == message.min.yCoord && parent.minZ == message.min.zCoord && parent.maxX == message.max.xCoord && parent.maxY == message.max.yCoord && parent.maxZ == message.max.zCoord) {
+                    removeParents.add(parent);
+                }
+            }
+            return removeParents;
         }
     }
 }

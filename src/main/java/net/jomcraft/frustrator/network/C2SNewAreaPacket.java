@@ -4,11 +4,17 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,14 +97,18 @@ public class C2SNewAreaPacket implements IMessage {
                 }
 
                 if (index == null) {
-                    bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[] {message.parent}));
+                    bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[]{message.parent}));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.create.success", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+
                     FileManager.getFrustumJSON().save();
                     Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)));
+                } else {
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.create.fail", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
                 }
             } else {
                 bounds = new ArrayList<FrustumBounds>();
-                bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[] {message.parent}));
-
+                bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[]{message.parent}));
+                player.addChatMessage(new ChatComponentTranslation("frustrator.create.success", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                 dimMap.put(player.worldObj.provider.dimensionId, bounds);
                 FileManager.getFrustumJSON().save();
                 Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)));

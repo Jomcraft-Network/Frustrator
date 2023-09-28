@@ -1,2 +1,41 @@
 item.frustrator.mainArea.name=Frustrator Main Area Tool
 item.frustrator.triggerArea.name=Frustrator Trigger Area Tool
+
+frustrator.create.success=Successfully created new %s area
+frustrator.create.fail=Could not create %s area as it already exists
+
+frustrator.delete.fail=No area has been deleted
+frustrator.delete.success=Successfully deleted formerly selected %s area
+
+frustrator.addTrigger.success=Successfully linked the clicked main area to the selected trigger area. To unlink please delete the trigger area
+frustrator.addTrigger.alreadyExists=This main area and trigger area are already linked
+frustrator.addTrigger.fail=No area has been modified
+
+frustrator.resize.success=Successfully resized selected %s area
+frustrator.resize.fail=No area has been resized
+
+frustrator.leftClick.onAir=Left Click on air:
+frustrator.leftClick.shiftOnAir=SHIFT + Left Click on air:
+
+frustrator.deselect.mainArea=Deselect currently selected main area
+frustrator.deselect.triggerArea=Deselect currently selected trigger area
+
+frustrator.delete.mainArea=Delete selected main area
+frustrator.delete.triggerArea=Delete selected trigger area
+
+frustrator.rightClick.onBlock=Right Click on block:
+frustrator.rightClick.shiftOnBlock=SHIFT + Right Click on block:
+frustrator.rightClick.onAir=Right Click on air:
+frustrator.rightClick.onMainArea=Right Click on main area (red):
+frustrator.rightClick.onTriggerArea=Right Click on trigger area (yellow):
+frustrator.rightClick.firstMarker=Set first marker position
+frustrator.rightClick.secondMarker=Set second marker position
+
+frustrator.select.triggerArea=Select new trigger area
+frustrator.select.mainArea=Select new main area
+
+frustrator.confirm.creationMainArea=Confirm creation of new main area (red)
+frustrator.confirm.creationTriggerArea=Confirm creation of new trigger area (yellow)
+frustrator.confirm.resizeMainArea=Confirm new positions of selected main area (confirm resize)
+frustrator.confirm.resizeTriggerArea=Confirm new positions of selected trigger area (confirm resize)
+frustrator.confirm.linking=Confirm linking selected trigger area (yellow) to clicked main area

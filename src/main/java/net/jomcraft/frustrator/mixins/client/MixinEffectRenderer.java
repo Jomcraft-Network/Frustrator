@@ -15,8 +15,7 @@ public class MixinEffectRenderer {
 
     @Inject(method = "addEffect", at = @At(value = "HEAD"), cancellable = true, remap = true)
     public void addEffect(EntityFX p_78873_1_, CallbackInfo info) {
-        if (ClientEventHandler.showAllMainAreas)
-            return;
+        if (ClientEventHandler.showAllMainAreas) return;
 
         final int x = MathHelper.floor_double(p_78873_1_.posX);
         final int y = MathHelper.floor_double(p_78873_1_.posY);
@@ -25,7 +24,7 @@ public class MixinEffectRenderer {
         for (int i = 0; i < ClientEventHandler.frustumBounds.length; i++) {
             final FrustumBounds frustum = ClientEventHandler.frustumBounds[i];
             if (ClientEventHandler.frustumCheck(x, y, z, frustum)) {
-                if(ClientEventHandler.localFrustums.isEmpty()){
+                if (ClientEventHandler.localFrustums.isEmpty()) {
                     info.cancel();
                     return;
                 }
@@ -33,13 +32,13 @@ public class MixinEffectRenderer {
                 boolean success = false;
                 for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
                     final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
-                    if (frustum.equalsArea(localFrustum)){
+                    if (frustum.equalsArea(localFrustum)) {
                         success = true;
                         break;
                     }
                 }
 
-                if(!success) {
+                if (!success) {
                     info.cancel();
                     return;
                 }

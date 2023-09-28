@@ -4,11 +4,12 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -102,25 +103,27 @@ public class C2SAddTriggerPacket implements IMessage {
                 }
 
                 if (index != null) {
-                    if(parents == null)
-                        parents = new FrustumBounds[0];
+                    if (parents == null) parents = new FrustumBounds[0];
 
                     ArrayList<FrustumBounds> parentList = new ArrayList<FrustumBounds>(Arrays.asList(parents));
-                    parentList.add(new FrustumBounds(mainMinX, mainMinY, mainMinZ, mainMaxX, mainMaxY, mainMaxZ, false, null));
-                    bounds.set((int) index, new FrustumBounds(triggerMinX, triggerMinY, triggerMinZ, triggerMaxX, triggerMaxY, triggerMaxZ, trigger, parentList.toArray(new FrustumBounds[parentList.size()])));
-                }
-
-                /*if (!trigger) {
-                    for (int i = 0; i < bounds.size(); i++) {
-                        final FrustumBounds frustum = bounds.get(i);
-                        for(int ii = 0; ii < frustum.parents.length; ii++) {
-                            final FrustumBounds parent = frustum.parents[ii];
-                            if (frustum.trigger && parent.minX == message.oldPos1.xCoord && parent.minY == message.oldPos1.yCoord && parent.minZ == message.oldPos1.zCoord && parent.maxX == message.oldPos2.xCoord && parent.maxY == message.oldPos2.yCoord && parent.maxZ == message.oldPos2.zCoord) {
-                                frustum.parents[ii] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, false, null);
-                            }
+                    boolean alreadyContained = false;
+                    final FrustumBounds newFrustum = new FrustumBounds(mainMinX, mainMinY, mainMinZ, mainMaxX, mainMaxY, mainMaxZ, false, null);
+                    for (FrustumBounds parent : parentList) {
+                        if (parent.equalsArea(newFrustum)) {
+                            alreadyContained = true;
+                            break;
                         }
                     }
-                }*/
+                    if (!alreadyContained) {
+                        parentList.add(newFrustum);
+                        bounds.set((int) index, new FrustumBounds(triggerMinX, triggerMinY, triggerMinZ, triggerMaxX, triggerMaxY, triggerMaxZ, trigger, parentList.toArray(new FrustumBounds[parentList.size()])));
+                        player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.success", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                    } else {
+                        player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.alreadyExists", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
+                    }
+                } else {
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
+                }
 
                 FileManager.getFrustumJSON().save();
 

@@ -18,14 +18,13 @@ public class MixinWorldClient {
         final int yCoord = MathHelper.floor_double(y);
         final int zCoord = MathHelper.floor_double(z);
 
-        if (ClientEventHandler.showAllMainAreas)
-            return;
+        if (ClientEventHandler.showAllMainAreas) return;
 
         for (int i = 0; i < ClientEventHandler.frustumBounds.length; i++) {
             final FrustumBounds frustum = ClientEventHandler.frustumBounds[i];
             if (ClientEventHandler.frustumCheck(xCoord, yCoord, zCoord, frustum)) {
 
-                if(ClientEventHandler.localFrustums.isEmpty()){
+                if (ClientEventHandler.localFrustums.isEmpty()) {
                     info.cancel();
                     return;
                 }
@@ -39,7 +38,7 @@ public class MixinWorldClient {
                     }
                 }
 
-                if(!success) {
+                if (!success) {
                     info.cancel();
                     return;
                 }

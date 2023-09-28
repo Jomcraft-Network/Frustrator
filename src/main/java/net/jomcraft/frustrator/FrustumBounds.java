@@ -21,9 +21,9 @@ public class FrustumBounds {
     @Deprecated
     public FrustumBounds parent;
 
-    public FrustumBounds [] parents;
+    public FrustumBounds[] parents;
 
-    public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds [] parents) {
+    public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds[] parents) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;

@@ -19,8 +19,7 @@ public class MixinNetHandlerPlayClient {
     @Inject(method = "handleEntityMovement", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setPositionAndRotation2(DDDFFI)V", shift = At.Shift.BEFORE), cancellable = true, remap = true)
     public void handleEntityMovement(S14PacketEntity packetIn, CallbackInfo info) {
         final Entity e = packetIn.func_149065_a(Minecraft.getMinecraft().theWorld);
-        if (e.ticksExisted % 3 != 0)
-            return;
+        if (e.ticksExisted % 3 != 0) return;
 
         final int x = MathHelper.floor_double((double) e.serverPosX / 32.0D);
         final int y = MathHelper.floor_double((double) e.serverPosY / 32.0D);

@@ -71,7 +71,6 @@ public class Frustrator {
         network.registerMessage(C2SAddTriggerPacket.Handler.class, C2SAddTriggerPacket.class, 3, Side.SERVER);
         network.registerMessage(S2CSyncAllAreas.Handler.class, S2CSyncAllAreas.class, 4, Side.CLIENT);
         network.registerMessage(S2CClearSelection.Handler.class, S2CClearSelection.class, 5, Side.CLIENT);
-
     }
 
     @EventHandler
