@@ -4,10 +4,13 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,6 +94,9 @@ public class C2SResizeAreaPacket implements IMessage {
 
                 if (index != null) {
                     bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents));
+                    player.addChatMessage(new ChatComponentText("Successfully resized selected " + (trigger ? "trigger" : "main") + " area").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                } else {
+                    player.addChatMessage(new ChatComponentText("No area has been resized").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
 
                 if (!trigger) {

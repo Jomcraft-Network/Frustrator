@@ -95,18 +95,18 @@ public class ItemFrustrator extends Item {
                         }
                     } else {
 
-                        if(ClientEventHandler.focusedFrustum != null && ClientEventHandler.selectedFrustum == null && ClientEventHandler.selectedTrigger != null) {
-                           // System.out.println("CONFIRM!");
+                        if (ClientEventHandler.focusedFrustum != null && ClientEventHandler.selectedFrustum == null && ClientEventHandler.selectedTrigger != null) {
+                            // System.out.println("CONFIRM!");
                             Frustrator.network.sendToServer(new C2SAddTriggerPacket(Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.minX, ClientEventHandler.focusedFrustum.minY, ClientEventHandler.focusedFrustum.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.maxX, ClientEventHandler.focusedFrustum.maxY, ClientEventHandler.focusedFrustum.maxZ)));
-                           // ClientEventHandler.selectedTrigger = null;
-                        //    pos1 = null;
-                           // pos2 = null;
+                            // ClientEventHandler.selectedTrigger = null;
+                            //    pos1 = null;
+                            // pos2 = null;
                         }
                         //} else {
-                            ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
-                            pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.minX, ClientEventHandler.selectedFrustum.minY, ClientEventHandler.selectedFrustum.minZ);
-                            pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.maxX, ClientEventHandler.selectedFrustum.maxY, ClientEventHandler.selectedFrustum.maxZ);
-                      //  }
+                        ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
+                        pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.minX, ClientEventHandler.selectedFrustum.minY, ClientEventHandler.selectedFrustum.minZ);
+                        pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.maxX, ClientEventHandler.selectedFrustum.maxY, ClientEventHandler.selectedFrustum.maxZ);
+                        //  }
 
                     }
 
@@ -124,10 +124,11 @@ public class ItemFrustrator extends Item {
                                     Frustrator.network.sendToServer(new C2SResizeAreaPacket(pos1, pos2, oldPos1, oldPos2));
 
                                 } else {
-                                    if (ClientEventHandler.selectedFrustum == null)
+                                    if (ClientEventHandler.selectedFrustum == null) {
                                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No parent main area is selected!"));
-                                    else
+                                    } else {
                                         Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, ClientEventHandler.selectedFrustum));
+                                    }
                                 }
 
                                 if (ClientEventHandler.selectedFrustum != null) {
@@ -195,9 +196,55 @@ public class ItemFrustrator extends Item {
     @Override
     public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_, boolean p_77624_4_) {
         super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
-        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on block: " + EnumChatFormatting.AQUA + "First marker").getUnformattedTextForChat());
-        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "SHIFT + Right Click on block: " + EnumChatFormatting.AQUA + "Second marker").getUnformattedTextForChat());
-        p_77624_3_.add(new ChatComponentText("").getUnformattedTextForChat());
-        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "SHIFT + Right Click on air: " + EnumChatFormatting.AQUA + "Confirm area modification/creation").getUnformattedTextForChat());
+        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on block: " + EnumChatFormatting.GREEN + "Set first marker position").getUnformattedTextForChat());
+        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "SHIFT + Right Click on block: " + EnumChatFormatting.GREEN + "Set second marker position").getUnformattedTextForChat());
+
+        if (p_77624_1_.getItemDamage() == 0) {
+            if (ClientEventHandler.focusedFrustum == null) {
+                if (pos1 != null && pos2 != null) {
+                    if (ClientEventHandler.selectedFrustum != null) {
+                        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on air: " + EnumChatFormatting.GREEN + "Confirm new positions of selected main area (confirm resize)").getUnformattedTextForChat());
+                    } else {
+                        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on air: " + EnumChatFormatting.GREEN + "Confirm creation of new main area (red)").getUnformattedTextForChat());
+                    }
+                }
+
+            } else {
+                if (ClientEventHandler.focusedFrustum != null && ClientEventHandler.selectedFrustum == null && ClientEventHandler.selectedTrigger != null) {
+                    p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on main area (red): " + EnumChatFormatting.GREEN + "Confirm linking selected trigger area (yellow) to clicked main area").getUnformattedTextForChat());
+                } else {
+                    p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on main area (red): " + EnumChatFormatting.GREEN + "Select new main area").getUnformattedTextForChat());
+                }
+            }
+
+        } else if (p_77624_1_.getItemDamage() == 1) {
+            if (ClientEventHandler.focusedTrigger == null) {
+
+                if (pos1 != null && pos2 != null) {
+
+                    if (ClientEventHandler.selectedTrigger != null) {
+                        p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on air: " + EnumChatFormatting.GREEN + "Confirm new positions of selected trigger area (confirm resize)").getUnformattedTextForChat());
+                    } else {
+                        if (ClientEventHandler.selectedFrustum != null) {
+                            p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on air: " + EnumChatFormatting.GREEN + "Confirm creation of new trigger area (yellow)").getUnformattedTextForChat());
+                        }
+                    }
+                }
+
+            } else {
+                p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Right Click on trigger area (yellow): " + EnumChatFormatting.GREEN + "Select new trigger area").getUnformattedTextForChat());
+            }
+        }
+
+        if (ClientEventHandler.selectedFrustum != null && p_77624_1_.getItemDamage() == 0) {
+            p_77624_3_.add(new ChatComponentText("").getUnformattedTextForChat());
+            p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Left Click: " + EnumChatFormatting.AQUA + "Deselect currently selected main area").getUnformattedTextForChat());
+            p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "SHIFT + Left Click: " + EnumChatFormatting.AQUA + "Delete selected main area").getUnformattedTextForChat());
+
+        } else if (ClientEventHandler.selectedTrigger != null && p_77624_1_.getItemDamage() == 1) {
+            p_77624_3_.add(new ChatComponentText("").getUnformattedTextForChat());
+            p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "Left Click: " + EnumChatFormatting.AQUA + "Deselect currently selected trigger area").getUnformattedTextForChat());
+            p_77624_3_.add(new ChatComponentText(EnumChatFormatting.GOLD + "SHIFT + Left Click: " + EnumChatFormatting.AQUA + "Delete selected trigger area").getUnformattedTextForChat());
+        }
     }
 }

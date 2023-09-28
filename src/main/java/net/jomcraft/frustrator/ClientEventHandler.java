@@ -8,6 +8,7 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatStyle;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -41,6 +42,8 @@ public class ClientEventHandler {
     public static FrustumBounds selectedFrustum = null;
     public static boolean showAllMainAreas = false;
     public static boolean showAllTriggerAreas = false;
+
+    public static final ChatStyle style = new ChatStyle();
 
     public static boolean frustumCheck(final int x, final int y, final int z, final FrustumBounds frustum) {
         if ((x >= frustum.minX && x <= (frustum.maxX)) && (y >= frustum.minY && y <= (frustum.maxY)) && (z >= frustum.minZ && z <= (frustum.maxZ))) {
@@ -190,11 +193,11 @@ public class ClientEventHandler {
 
                         inFrustum = true;
                         //TODO: Change this!
-                        break;
+                        //break;
                     }
                 }
 
-                if (!inFrustum) {
+               // if (!inFrustum) {
                     for (int i = 0; i < triggerBounds.length; i++) {
                         final FrustumBounds trigger = triggerBounds[i];
                         if (frustumCheck(x, y, z, trigger)) {
@@ -211,7 +214,7 @@ public class ClientEventHandler {
                             //break;
                         }
                     }
-                }
+                //}
 
                 if (!inFrustum) {
 
