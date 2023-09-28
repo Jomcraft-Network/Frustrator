@@ -38,12 +38,11 @@ public class MixinTileEntity implements IMixinEntity {
     public void updateEntity(CallbackInfo info) {
         if (worldObj.isRemote) {
 
-            if (ClientEventHandler.showAllMainAreas)
-                return;
+            if (ClientEventHandler.showAllMainAreas) return;
 
-            if(this.frustumBounds != null) {
+            if (this.frustumBounds != null) {
 
-                if(ClientEventHandler.localFrustums.isEmpty()){
+                if (ClientEventHandler.localFrustums.isEmpty()) {
                     info.cancel();
                     return;
                 }
@@ -58,7 +57,7 @@ public class MixinTileEntity implements IMixinEntity {
                     }
                 }
 
-                if(!success) {
+                if (!success) {
                     info.cancel();
                     return;
                 }

@@ -8,6 +8,7 @@ import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
+
 import java.util.ArrayList;
 
 public class S2CSyncAllAreas implements IMessage {
@@ -45,7 +46,7 @@ public class S2CSyncAllAreas implements IMessage {
             if (trigger) {
                 int parentLength = buf.readInt();
                 parents = new FrustumBounds[parentLength];
-                for(int i = 0; i < parentLength; i++){
+                for (int i = 0; i < parentLength; i++) {
                     parents[i] = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null);
                 }
             }
@@ -74,7 +75,7 @@ public class S2CSyncAllAreas implements IMessage {
             buf.writeBoolean(frustum.trigger);
             if (frustum.trigger) {
                 buf.writeInt(frustum.parents.length);
-                for(int i = 0; i < frustum.parents.length; i++) {
+                for (int i = 0; i < frustum.parents.length; i++) {
                     final FrustumBounds parent = frustum.parents[i];
                     buf.writeInt(parent.minX);
                     buf.writeInt(parent.minY);

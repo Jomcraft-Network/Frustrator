@@ -5,6 +5,7 @@ import net.jomcraft.frustrator.IMixinEntity;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
+
 import javax.annotation.Nullable;
 
 @Mixin(Entity.class)

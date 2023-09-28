@@ -45,8 +45,8 @@ public class FileManager {
                         for (FrustumBounds frustum : list) {
                             if (frustum.parent != null) {
                                 ArrayList<FrustumBounds> parents;
-                                if(frustum.parents != null){
-                                     parents = new ArrayList<FrustumBounds>(Arrays.asList(frustum.parents));
+                                if (frustum.parents != null) {
+                                    parents = new ArrayList<FrustumBounds>(Arrays.asList(frustum.parents));
                                 } else {
                                     parents = new ArrayList<FrustumBounds>();
                                 }
@@ -55,7 +55,7 @@ public class FileManager {
                                 frustum.parents = parents.toArray(new FrustumBounds[parents.size()]);
                             }
 
-                            if(frustum.parents == null){
+                            if (frustum.parents == null) {
                                 frustum.parents = new FrustumBounds[0];
                             }
                         }
@@ -64,10 +64,10 @@ public class FileManager {
 
                 } catch (Exception e) {
                     Frustrator.log.log(Level.ERROR, "Exception while reading frustum file: ", e);
-                   // if (e instanceof JsonSyntaxException) {
-                        frustratorFile.renameTo(new File(frustratorFolder, "frustums_malformed.json"));
-                        initJSON();
-                   // }
+                    // if (e instanceof JsonSyntaxException) {
+                    frustratorFile.renameTo(new File(frustratorFolder, "frustums_malformed.json"));
+                    initJSON();
+                    // }
                 }
 
             } else {

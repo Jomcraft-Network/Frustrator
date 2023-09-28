@@ -9,10 +9,7 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -106,8 +103,7 @@ public class C2SAddTriggerPacket implements IMessage {
                 }
 
                 if (index != null) {
-                    if (parents == null)
-                        parents = new FrustumBounds[0];
+                    if (parents == null) parents = new FrustumBounds[0];
 
                     ArrayList<FrustumBounds> parentList = new ArrayList<FrustumBounds>(Arrays.asList(parents));
                     boolean alreadyContained = false;
@@ -121,12 +117,12 @@ public class C2SAddTriggerPacket implements IMessage {
                     if (!alreadyContained) {
                         parentList.add(newFrustum);
                         bounds.set((int) index, new FrustumBounds(triggerMinX, triggerMinY, triggerMinZ, triggerMaxX, triggerMaxY, triggerMaxZ, trigger, parentList.toArray(new FrustumBounds[parentList.size()])));
-                        player.addChatMessage(new ChatComponentText("Successfully linked the clicked main area to the selected trigger area. To unlink please delete the trigger area").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                        player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.success", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                     } else {
-                        player.addChatMessage(new ChatComponentText("This main area and trigger area are already linked!").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
+                        player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.alreadyExists", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
                     }
                 } else {
-                    player.addChatMessage(new ChatComponentText("No area has been modified").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
 
                 FileManager.getFrustumJSON().save();

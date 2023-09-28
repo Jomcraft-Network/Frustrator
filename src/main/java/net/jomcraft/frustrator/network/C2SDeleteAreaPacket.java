@@ -10,6 +10,7 @@ import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
 
@@ -73,9 +74,9 @@ public class C2SDeleteAreaPacket implements IMessage {
 
                 if (index != null) {
                     bounds.remove((int) index);
-                    player.addChatMessage(new ChatComponentText("Successfully deleted formerly selected " + (trigger ? "trigger" : "main") + " area").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.delete.success", new Object[]{(trigger ? "trigger" : "main")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                 } else {
-                    player.addChatMessage(new ChatComponentText("No area has been deleted").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.delete.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
 
                 if (!trigger) {

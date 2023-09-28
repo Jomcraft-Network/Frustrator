@@ -10,8 +10,10 @@ import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -94,15 +96,15 @@ public class C2SResizeAreaPacket implements IMessage {
 
                 if (index != null) {
                     bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents));
-                    player.addChatMessage(new ChatComponentText("Successfully resized selected " + (trigger ? "trigger" : "main") + " area").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.resize.success", new Object[]{(trigger ? "trigger" : "main")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                 } else {
-                    player.addChatMessage(new ChatComponentText("No area has been resized").setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.resize.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
 
                 if (!trigger) {
                     for (int i = 0; i < bounds.size(); i++) {
                         final FrustumBounds frustum = bounds.get(i);
-                        for(int ii = 0; ii < frustum.parents.length; ii++) {
+                        for (int ii = 0; ii < frustum.parents.length; ii++) {
                             final FrustumBounds parent = frustum.parents[ii];
                             if (frustum.trigger && parent.minX == message.oldPos1.xCoord && parent.minY == message.oldPos1.yCoord && parent.minZ == message.oldPos1.zCoord && parent.maxX == message.oldPos2.xCoord && parent.maxY == message.oldPos2.yCoord && parent.maxZ == message.oldPos2.zCoord) {
                                 frustum.parents[ii] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, false, null);

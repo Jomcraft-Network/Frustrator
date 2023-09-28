@@ -15,13 +15,12 @@ public class MixinTileEntityRendererDispatcher {
 
     @Inject(method = "renderTileEntityAt", at = @At(value = "HEAD"), cancellable = true, remap = true)
     public void renderTileEntityAt(TileEntity p_147549_1_, double p_147549_2_, double p_147549_4_, double p_147549_6_, float p_147549_8_, CallbackInfo info) {
-        if (ClientEventHandler.showAllMainAreas)
-            return;
+        if (ClientEventHandler.showAllMainAreas) return;
 
         final FrustumBounds frustum = ((IMixinEntity) p_147549_1_).getFrustum();
         if (frustum != null) {
 
-            if(ClientEventHandler.localFrustums.isEmpty()){
+            if (ClientEventHandler.localFrustums.isEmpty()) {
                 info.cancel();
                 return;
             }
@@ -36,7 +35,7 @@ public class MixinTileEntityRendererDispatcher {
                 }
             }
 
-            if(!success) {
+            if (!success) {
                 info.cancel();
                 return;
             }
