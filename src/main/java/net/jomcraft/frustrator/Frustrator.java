@@ -9,9 +9,11 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
+import net.jomcraft.frustrator.command.CommandFrustrator;
 import net.jomcraft.frustrator.network.*;
 import net.jomcraft.frustrator.proxy.ServerProxy;
 import net.jomcraft.frustrator.storage.FileManager;
+import net.minecraft.command.ICommand;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +43,7 @@ public class Frustrator {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand((ICommand) new CommandFrustrator());
         FileManager.initialize();
     }
 

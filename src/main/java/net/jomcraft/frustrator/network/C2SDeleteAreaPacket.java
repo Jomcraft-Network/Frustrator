@@ -106,7 +106,7 @@ public class C2SDeleteAreaPacket implements IMessage {
 
                 if (index != null || !trigger) {
                     FileManager.getFrustumJSON().save();
-                    Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, message.min, message.max));
+                    Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, message.min, message.max), player.dimension);
                 }
 
             }

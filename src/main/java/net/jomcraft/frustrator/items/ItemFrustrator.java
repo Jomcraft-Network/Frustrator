@@ -14,6 +14,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemNameTag;
 import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
@@ -88,7 +89,11 @@ public class ItemFrustrator extends Item {
                                     Frustrator.network.sendToServer(new C2SResizeAreaPacket(pos1, pos2, oldPos1, oldPos2));
 
                                 } else {
-                                    Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, null));
+                                    int channelID = 0;
+                                    if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemFrustrator && player.getHeldItem().hasTagCompound() && player.getHeldItem().getTagCompound().hasKey("channelID")){
+                                        channelID = player.getHeldItem().getTagCompound().getInteger("channelID");
+                                    }
+                                    Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, null, channelID));
                                 }
 
                                 pos1 = null;
@@ -122,7 +127,11 @@ public class ItemFrustrator extends Item {
                                     if (ClientEventHandler.selectedFrustum == null) {
                                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No parent main area is selected!"));
                                     } else {
-                                        Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, ClientEventHandler.selectedFrustum));
+                                        int channelID = 0;
+                                        if(player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemFrustrator && player.getHeldItem().hasTagCompound() && player.getHeldItem().getTagCompound().hasKey("channelID")){
+                                            channelID = player.getHeldItem().getTagCompound().getInteger("channelID");
+                                        }
+                                        Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, ClientEventHandler.selectedFrustum, channelID));
                                     }
                                 }
 
@@ -241,5 +250,13 @@ public class ItemFrustrator extends Item {
             p_77624_3_.add(EnumChatFormatting.GOLD + StatCollector.translateToLocal("frustrator.leftClick.onAir") + " " + EnumChatFormatting.AQUA + StatCollector.translateToLocal("frustrator.deselect.triggerArea"));
             p_77624_3_.add(EnumChatFormatting.GOLD + StatCollector.translateToLocal("frustrator.leftClick.shiftOnAir") + " " + EnumChatFormatting.AQUA + StatCollector.translateToLocal("frustrator.delete.triggerArea"));
         }
+
+        p_77624_3_.add("");
+        int channelID = 0;
+        if(p_77624_1_.hasTagCompound() && p_77624_1_.getTagCompound().hasKey("channelID")){
+            channelID = p_77624_1_.getTagCompound().getInteger("channelID");
+        }
+
+        p_77624_3_.add(EnumChatFormatting.RED + StatCollector.translateToLocal("frustrator.channelID") + " " + EnumChatFormatting.RESET + channelID);
     }
 }

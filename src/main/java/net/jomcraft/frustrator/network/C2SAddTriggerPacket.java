@@ -89,6 +89,7 @@ public class C2SAddTriggerPacket implements IMessage {
 
                 Integer index = null;
                 boolean trigger = false;
+                int channelID = -1;
                 FrustumBounds[] parents = null;
 
                 for (int i = 0; i < bounds.size(); i++) {
@@ -98,6 +99,7 @@ public class C2SAddTriggerPacket implements IMessage {
                         index = i;
                         trigger = frustum.trigger;
                         parents = frustum.parents;
+                        channelID = frustum.channelID;
                         break;
                     }
                 }
@@ -107,7 +109,7 @@ public class C2SAddTriggerPacket implements IMessage {
 
                     ArrayList<FrustumBounds> parentList = new ArrayList<FrustumBounds>(Arrays.asList(parents));
                     boolean alreadyContained = false;
-                    final FrustumBounds newFrustum = new FrustumBounds(mainMinX, mainMinY, mainMinZ, mainMaxX, mainMaxY, mainMaxZ, false, null);
+                    final FrustumBounds newFrustum = new FrustumBounds(mainMinX, mainMinY, mainMinZ, mainMaxX, mainMaxY, mainMaxZ, false, null, channelID);
                     for (FrustumBounds parent : parentList) {
                         if (parent.equalsArea(newFrustum)) {
                             alreadyContained = true;
@@ -116,7 +118,7 @@ public class C2SAddTriggerPacket implements IMessage {
                     }
                     if (!alreadyContained) {
                         parentList.add(newFrustum);
-                        bounds.set((int) index, new FrustumBounds(triggerMinX, triggerMinY, triggerMinZ, triggerMaxX, triggerMaxY, triggerMaxZ, trigger, parentList.toArray(new FrustumBounds[parentList.size()])));
+                        bounds.set((int) index, new FrustumBounds(triggerMinX, triggerMinY, triggerMinZ, triggerMaxX, triggerMaxY, triggerMaxZ, trigger, parentList.toArray(new FrustumBounds[parentList.size()]), channelID));
                         player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.success", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                     } else {
                         player.addChatMessage(new ChatComponentTranslation("frustrator.addTrigger.alreadyExists", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
@@ -127,7 +129,7 @@ public class C2SAddTriggerPacket implements IMessage {
 
                 FileManager.getFrustumJSON().save();
 
-                Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), false, null, null));
+                Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), false, null, null), player.dimension);
             }
             return null;
         }

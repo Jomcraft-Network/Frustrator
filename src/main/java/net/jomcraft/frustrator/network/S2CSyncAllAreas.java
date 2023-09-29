@@ -47,11 +47,11 @@ public class S2CSyncAllAreas implements IMessage {
                 int parentLength = buf.readInt();
                 parents = new FrustumBounds[parentLength];
                 for (int i = 0; i < parentLength; i++) {
-                    parents[i] = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null);
+                    parents[i] = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null, -1);
                 }
             }
-
-            frustums[x] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents);
+            final int channelID = buf.readInt();
+            frustums[x] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents, channelID);
         }
 
         this.frustums = frustums;
@@ -85,6 +85,7 @@ public class S2CSyncAllAreas implements IMessage {
                     buf.writeInt(parent.maxZ);
                 }
             }
+            buf.writeInt(frustum.channelID);
         }
         buf.writeBoolean(this.shouldUpdate);
         if (this.shouldUpdate) {

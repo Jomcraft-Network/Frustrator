@@ -58,6 +58,10 @@ public class FileManager {
                             if (frustum.parents == null) {
                                 frustum.parents = new FrustumBounds[0];
                             }
+
+                            if(frustum.channelID < 0) {
+                                frustum.channelID = 0;
+                            }
                         }
                     }
                     frustumJson.save();
