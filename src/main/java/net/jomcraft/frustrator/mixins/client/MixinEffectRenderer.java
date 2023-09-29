@@ -2,6 +2,7 @@ package net.jomcraft.frustrator.mixins.client;
 
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.FrustumBounds;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.util.MathHelper;

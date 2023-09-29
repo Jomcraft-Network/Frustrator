@@ -88,6 +88,11 @@ public class C2SNewAreaPacket implements IMessage {
             final int maxY = Math.max((int) message.pos1.yCoord, (int) message.pos2.yCoord);
             final int maxZ = Math.max((int) message.pos1.zCoord, (int) message.pos2.zCoord);
 
+            if(!FileManager.getFrustumJSON().getChannelMap().get(player.dimension).containsKey(message.channelID)){
+                player.addChatMessage(new ChatComponentTranslation("frustrator.create.fail.channel", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
+                return null;
+            }
+
             if (dimMap.containsKey(player.worldObj.provider.dimensionId)) {
                 bounds = dimMap.get(player.worldObj.provider.dimensionId);
                 Integer index = null;

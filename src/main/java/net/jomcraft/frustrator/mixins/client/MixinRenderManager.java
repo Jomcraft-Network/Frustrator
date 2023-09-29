@@ -3,6 +3,7 @@ package net.jomcraft.frustrator.mixins.client;
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.IMixinEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

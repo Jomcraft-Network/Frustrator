@@ -11,6 +11,8 @@ frustrator.addTrigger.success=Successfully linked the clicked main area to the s
 frustrator.addTrigger.alreadyExists=This main area and trigger area are already linked
 frustrator.addTrigger.fail=No area has been modified
 
+frustrator.trigger.noParent=No parent main area is selected
+
 frustrator.resize.success=Successfully resized selected %s area
 frustrator.resize.fail=No area has been resized
 

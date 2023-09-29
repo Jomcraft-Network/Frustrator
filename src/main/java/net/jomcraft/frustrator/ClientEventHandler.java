@@ -20,6 +20,7 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nullable;
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ClientEventHandler {
@@ -49,6 +50,10 @@ public class ClientEventHandler {
     public static boolean showAllTriggerAreas = false;
 
     public static final ChatStyle style = new ChatStyle();
+
+    public static HashMap<Integer, String> channelMap = null;
+
+    //public static boolean isSneaking = false;
 
     public static boolean frustumCheck(final int x, final int y, final int z, final FrustumBounds frustum) {
         if ((x >= frustum.minX && x <= (frustum.maxX)) && (y >= frustum.minY && y <= (frustum.maxY)) && (z >= frustum.minZ && z <= (frustum.maxZ))) {
@@ -141,7 +146,10 @@ public class ClientEventHandler {
             if (event.player != Minecraft.getMinecraft().thePlayer)
                 return;
             int prevChannelID = currentChannelID;
-            if (Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem() != null && Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem().getItem() instanceof ItemFrustrator) {
+
+            boolean frustratorEquipped = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem() != null && Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem().getItem() instanceof ItemFrustrator;
+
+            if (frustratorEquipped) {
               // System.out.println("WTF!!");
                 final ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
                 if(stack.hasTagCompound() && stack.getTagCompound().hasKey("channelID")){
@@ -200,6 +208,18 @@ public class ClientEventHandler {
                         Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                 }
             }
+
+            /*if(isSneaking != event.player.isSneaking()){
+                if (frustratorEquipped) {
+                    for (int i = 0; i < frustumBounds.length; i++) {
+                        FrustumBounds frustum = frustumBounds[i];
+                        //if(event.player.isSneaking() ? frustum.channelID == currentChannelID : )
+                        Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
+                    }
+                }
+            }*/
+
+            //isSneaking = event.player.isSneaking();
 
             if (event.player.ticksExisted % 2 == 0) {
                // if (showAllMainAreas)
@@ -290,7 +310,7 @@ public class ClientEventHandler {
             if (showAllMainAreas) {
                 for (int i = 0; i < frustumBounds.length; i++) {
                     final FrustumBounds frustum = frustumBounds[i];
-                    if(frustum.channelID == currentChannelID) {
+                    if(frustum.channelID == currentChannelID || player.isSneaking()) {
                         if (frustum == focusedFrustum || frustum == selectedFrustum)
                             GL11.glLineWidth(6.0F);
                         ab = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1).getOffsetBoundingBox(-d0, -d1, -d2);
@@ -303,7 +323,7 @@ public class ClientEventHandler {
                 GL11.glColor4f(1.0F, 1.0F, 0.0F, 0.8F);
                 for (int i = 0; i < triggerBounds.length; i++) {
                     final FrustumBounds frustum = triggerBounds[i];
-                    if(frustum.channelID == currentChannelID) {
+                    if(frustum.channelID == currentChannelID || player.isSneaking()) {
                         if (frustum == focusedTrigger || frustum == selectedTrigger)
                             GL11.glLineWidth(6.0F);
                         ab = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1).getOffsetBoundingBox(-d0, -d1, -d2);
@@ -324,7 +344,7 @@ public class ClientEventHandler {
                 for (int i = 0; i < triggerBounds.length; i++) {
 
                     final FrustumBounds frustum = triggerBounds[i];
-                    if(frustum.channelID == currentChannelID) {
+                    if(frustum.channelID == currentChannelID || player.isSneaking()) {
                     boolean isTrigger = false;
 
                     for (int ii = 0; ii < frustum.parents.length; ii++) {

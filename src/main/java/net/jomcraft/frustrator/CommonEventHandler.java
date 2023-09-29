@@ -5,6 +5,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import net.jomcraft.frustrator.network.S2CClearSelection;
 import net.jomcraft.frustrator.network.S2CSyncAllAreas;
+import net.jomcraft.frustrator.network.S2CSyncChannels;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -25,10 +26,13 @@ public class CommonEventHandler {
             Frustrator.network.sendTo(new S2CSyncAllAreas(new FrustumBounds[0], false, null, null), (EntityPlayerMP) event.player);
         }
 
-        /*if (channelMap.containsKey(event.player.worldObj.provider.dimensionId)) {
-            HashMap<Integer, String> channels = channelMap.get(event.player.worldObj.provider.dimensionId);
-            Frustrator.network.sendTo(new S2CSyncChannels(channels));
-        }*/
+        HashMap<Integer, String> channels;
+        if (channelMap.containsKey(event.player.worldObj.provider.dimensionId)) {
+            channels = channelMap.get(event.player.worldObj.provider.dimensionId);
+        } else {
+            channels = new HashMap<Integer, String>();
+        }
+            Frustrator.network.sendTo(new S2CSyncChannels(channels), (EntityPlayerMP) event.player);
     }
 
     @SubscribeEvent
@@ -41,9 +45,12 @@ public class CommonEventHandler {
             Frustrator.network.sendTo(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), false, null, null), (EntityPlayerMP) event.player);
         }
 
-        /*if (channelMap.containsKey(event.player.worldObj.provider.dimensionId)) {
-            HashMap<Integer, String> channels = channelMap.get(event.player.worldObj.provider.dimensionId);
-            Frustrator.network.sendTo(new S2CSyncChannels(channels));
-        }*/
+        HashMap<Integer, String> channels;
+        if (channelMap.containsKey(event.player.worldObj.provider.dimensionId)) {
+            channels = channelMap.get(event.player.worldObj.provider.dimensionId);
+        } else {
+            channels = new HashMap<Integer, String>();
+        }
+        Frustrator.network.sendTo(new S2CSyncChannels(channels), (EntityPlayerMP) event.player);
     }
 }

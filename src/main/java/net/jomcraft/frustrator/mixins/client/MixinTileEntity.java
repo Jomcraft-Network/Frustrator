@@ -3,6 +3,7 @@ package net.jomcraft.frustrator.mixins.client;
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.IMixinEntity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;

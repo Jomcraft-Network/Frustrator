@@ -9,6 +9,7 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.items.ItemFrustrator;
 import net.jomcraft.frustrator.network.S2CSyncAllAreas;
+import net.jomcraft.frustrator.network.S2CSyncChannels;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommand;
@@ -99,6 +100,7 @@ public class CommandFrustrator implements ICommand {
                         Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), false, null, null), player.dimension);
 
                     player.addChatMessage(new ChatComponentTranslation("frustrator.command.remove.success", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                    Frustrator.network.sendToDimension(new S2CSyncChannels(dimMap), player.dimension);
                 } else {
                     player.addChatMessage(new ChatComponentTranslation("frustrator.command.remove.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
@@ -138,12 +140,13 @@ public class CommandFrustrator implements ICommand {
                 if(dimMap.containsKey(player.dimension)) {
                     getDimMap(player.dimension).put(Integer.parseInt(argString[1]), argString[2]);
                     FileManager.getFrustumJSON().save();
+                    Frustrator.network.sendToDimension(new S2CSyncChannels(dimMap), player.dimension);
                 }
 
             } else if(argString[0].equals("add")) {
-
                 getDimMap(player.dimension).put(Integer.parseInt(argString[1]), argString[2]);
                 FileManager.getFrustumJSON().save();
+                Frustrator.network.sendToDimension(new S2CSyncChannels(getDimMap(player.dimension)), player.dimension);
 
             } else {
                 sender.addChatMessage(new ChatComponentText((EnumChatFormatting.RED + getCommandUsage(sender))));
