@@ -14,6 +14,9 @@ public class MixinRenderBlocks {
 
     @Inject(method = "renderBlockByRenderType", at = @At(value = "HEAD"), cancellable = true, remap = true)
     public boolean renderWorldBlock(Block p_147805_1_, int p_147805_2_, int p_147805_3_, int p_147805_4_, CallbackInfoReturnable<Boolean> info) {
+        if(ClientEventHandler.bypassFrustrator)
+            return false;
+
         for (int a = 0; a < ClientEventHandler.frustumBounds.length; a++) {
             final FrustumBounds frustum = ClientEventHandler.frustumBounds[a];
             if (ClientEventHandler.showAllMainAreas && frustum.channelID == ClientEventHandler.currentChannelID)

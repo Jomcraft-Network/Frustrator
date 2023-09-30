@@ -59,6 +59,7 @@ public class Frustrator {
         FMLCommonHandler.instance().bus().register(commonHandler);
 
         if (event.getSide().isClient()) {
+            BypassKeybind.register();
             ClientEventHandler clientHandler = new ClientEventHandler();
             MinecraftForge.EVENT_BUS.register(clientHandler);
             FMLCommonHandler.instance().bus().register(clientHandler);

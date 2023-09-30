@@ -21,6 +21,9 @@ public class MixinEntityRenderer {
 
     @Inject(method = "getMouseOver", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;getEntitiesWithinAABBExcludingEntity(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/AxisAlignedBB;)Ljava/util/List;", shift = At.Shift.BEFORE), cancellable = true, remap = true)
     public void getMouseOver(float p_78473_1_, CallbackInfo info) {
+        if(ClientEventHandler.bypassFrustrator)
+            return;
+
         if (!ClientEventHandler.showAllMainAreas && !ClientEventHandler.showAllTriggerAreas) return;
 
         double d1 = (double) this.mc.playerController.getBlockReachDistance();

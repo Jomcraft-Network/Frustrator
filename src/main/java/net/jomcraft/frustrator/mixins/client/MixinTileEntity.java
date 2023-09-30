@@ -37,6 +37,8 @@ public class MixinTileEntity implements IMixinEntity {
     @Inject(method = "updateEntity", at = @At(value = "HEAD"), cancellable = true, remap = true)
     public void updateEntity(CallbackInfo info) {
         if (worldObj.isRemote) {
+            if(ClientEventHandler.bypassFrustrator)
+                return;
 
             if (this.frustumBounds != null) {
 

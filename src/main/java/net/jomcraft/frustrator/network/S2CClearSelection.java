@@ -30,6 +30,7 @@ public class S2CClearSelection implements IMessage {
             ClientEventHandler.selectedTrigger = null;
             ItemFrustrator.pos1 = null;
             ItemFrustrator.pos2 = null;
+            ClientEventHandler.bypassFrustrator = false;
 
             return null;
         }

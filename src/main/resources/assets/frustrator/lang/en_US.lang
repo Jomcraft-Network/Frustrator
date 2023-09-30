@@ -59,3 +59,7 @@ frustrator.command.remove.success=Successfully deleted channelID %s, all corresp
 frustrator.command.remove.fail=Failed to delete channelID %s
 
 frustrator.channelID=ChannelID:
+
+key.frustrator.bypass=Bypass Frustrator
+
+key.categories.frustrator=Frustrator
