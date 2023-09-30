@@ -150,7 +150,6 @@ public class ItemFrustrator extends Item {
                             pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ);
                             pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ);
                         } else {
-                            //LINK!!
                             Frustrator.network.sendToServer(new C2SChangeChannelPacket(ClientEventHandler.currentChannelID, Vec3.createVectorHelper(ClientEventHandler.focusedTrigger.minX, ClientEventHandler.focusedTrigger.minY, ClientEventHandler.focusedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedTrigger.maxX, ClientEventHandler.focusedTrigger.maxY, ClientEventHandler.focusedTrigger.maxZ)));
                         }
                     }

@@ -68,10 +68,8 @@ public class FileManager {
 
                 } catch (Exception e) {
                     Frustrator.log.log(Level.ERROR, "Exception while reading frustum file: ", e);
-                    // if (e instanceof JsonSyntaxException) {
                     frustratorFile.renameTo(new File(frustratorFolder, "frustums_malformed.json"));
                     initJSON();
-                    // }
                 }
 
             } else {

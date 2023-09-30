@@ -43,6 +43,7 @@ public class C2SNewAreaPacket implements IMessage {
         this.pos2 = Vec3.createVectorHelper(buf.readInt(), buf.readInt(), buf.readInt());
         if (buf.readBoolean())
             this.parent = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null, -1);
+
         this.channelID = buf.readInt();
     }
 
