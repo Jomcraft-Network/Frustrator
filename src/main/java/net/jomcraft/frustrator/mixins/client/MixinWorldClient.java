@@ -2,7 +2,6 @@ package net.jomcraft.frustrator.mixins.client;
 
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.FrustumBounds;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,12 +18,10 @@ public class MixinWorldClient {
         final int yCoord = MathHelper.floor_double(y);
         final int zCoord = MathHelper.floor_double(z);
 
-        //if (ClientEventHandler.showAllMainAreas) return;
-
         for (int i = 0; i < ClientEventHandler.frustumBounds.length; i++) {
             final FrustumBounds frustum = ClientEventHandler.frustumBounds[i];
 
-            if(ClientEventHandler.showAllMainAreas && frustum.channelID == ClientEventHandler.currentChannelID)
+            if (ClientEventHandler.showAllMainAreas && frustum.channelID == ClientEventHandler.currentChannelID)
                 continue;
 
             if (ClientEventHandler.frustumCheck(xCoord, yCoord, zCoord, frustum)) {

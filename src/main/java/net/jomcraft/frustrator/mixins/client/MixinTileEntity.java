@@ -3,7 +3,6 @@ package net.jomcraft.frustrator.mixins.client;
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.IMixinEntity;
-import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,11 +38,9 @@ public class MixinTileEntity implements IMixinEntity {
     public void updateEntity(CallbackInfo info) {
         if (worldObj.isRemote) {
 
-            //if (ClientEventHandler.showAllMainAreas) return;
-
             if (this.frustumBounds != null) {
 
-                if(ClientEventHandler.showAllMainAreas && this.frustumBounds.channelID == ClientEventHandler.currentChannelID)
+                if (ClientEventHandler.showAllMainAreas && this.frustumBounds.channelID == ClientEventHandler.currentChannelID)
                     return;
 
                 if (ClientEventHandler.localFrustums.isEmpty()) {

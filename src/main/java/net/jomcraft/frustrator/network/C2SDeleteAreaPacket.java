@@ -9,7 +9,6 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;

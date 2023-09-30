@@ -1,7 +1,5 @@
 package net.jomcraft.frustrator;
 
-import com.google.gson.annotations.SerializedName;
-
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
@@ -38,8 +36,7 @@ public class FrustumBounds {
     }
 
     public boolean equalsArea(FrustumBounds frustum) {
-        if (frustum == null)
-            return false;
+        if (frustum == null) return false;
         if (frustum.minX == this.minX && frustum.minY == this.minY && frustum.minZ == this.minZ && frustum.maxX == this.maxX && frustum.maxY == this.maxY && frustum.maxZ == this.maxZ)
             return true;
 

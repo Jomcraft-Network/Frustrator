@@ -18,7 +18,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,8 +51,6 @@ public class ClientEventHandler {
     public static final ChatStyle style = new ChatStyle();
 
     public static HashMap<Integer, String> channelMap = null;
-
-    //public static boolean isSneaking = false;
 
     public static boolean frustumCheck(final int x, final int y, final int z, final FrustumBounds frustum) {
         if ((x >= frustum.minX && x <= (frustum.maxX)) && (y >= frustum.minY && y <= (frustum.maxY)) && (z >= frustum.minZ && z <= (frustum.maxZ))) {
@@ -91,8 +88,7 @@ public class ClientEventHandler {
             final FrustumBounds frustum = ((IMixinEntity) event.entity).getFrustum();
 
             if (frustum != null) {
-                if (showAllMainAreas && frustum.channelID == currentChannelID)
-                    return;
+                if (showAllMainAreas && frustum.channelID == currentChannelID) return;
                 boolean success = false;
                 for (int ii = 0; ii < ClientEventHandler.localFrustums.size(); ii++) {
                     final FrustumBounds localFrustum = ClientEventHandler.localFrustums.get(ii);
@@ -111,8 +107,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void clientTick(TickEvent.ClientTickEvent event) {
-        if (Minecraft.getMinecraft().theWorld == null)
-            return;
+        if (Minecraft.getMinecraft().theWorld == null) return;
 
         if (event.phase == TickEvent.Phase.START) {
             final List tileEntityList = Minecraft.getMinecraft().theWorld.loadedTileEntityList;
@@ -143,17 +138,14 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START && event.player.worldObj.isRemote) {
-            if (event.player != Minecraft.getMinecraft().thePlayer)
-                return;
+            if (event.player != Minecraft.getMinecraft().thePlayer) return;
             int prevChannelID = currentChannelID;
 
             boolean frustratorEquipped = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem() != null && Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem().getItem() instanceof ItemFrustrator;
 
             if (frustratorEquipped) {
-              // System.out.println("WTF!!");
                 final ItemStack stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
-                if(stack.hasTagCompound() && stack.getTagCompound().hasKey("channelID")){
-                   // System.out.println(currentChannelID);
+                if (stack.hasTagCompound() && stack.getTagCompound().hasKey("channelID")) {
                     currentChannelID = stack.getTagCompound().getInteger("channelID");
                 } else {
                     currentChannelID = 0;
@@ -164,7 +156,7 @@ public class ClientEventHandler {
                         if (showAllMainAreas == false) {
                             for (int i = 0; i < frustumBounds.length; i++) {
                                 FrustumBounds frustum = frustumBounds[i];
-                                if(frustum.channelID == currentChannelID)
+                                if (frustum.channelID == currentChannelID)
                                     Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                             }
                         }
@@ -177,7 +169,7 @@ public class ClientEventHandler {
                         if (showAllMainAreas == true) {
                             for (int i = 0; i < frustumBounds.length; i++) {
                                 FrustumBounds frustum = frustumBounds[i];
-                                if(frustum.channelID == currentChannelID)
+                                if (frustum.channelID == currentChannelID)
                                     Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                             }
                         }
@@ -192,7 +184,7 @@ public class ClientEventHandler {
                     if (showAllMainAreas == true) {
                         for (int i = 0; i < frustumBounds.length; i++) {
                             FrustumBounds frustum = frustumBounds[i];
-                            if(frustum.channelID == currentChannelID)
+                            if (frustum.channelID == currentChannelID)
                                 Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                         }
                     }
@@ -201,30 +193,15 @@ public class ClientEventHandler {
                 showAllTriggerAreas = false;
             }
 
-            if(currentChannelID != prevChannelID){
+            if (currentChannelID != prevChannelID) {
                 for (int i = 0; i < frustumBounds.length; i++) {
                     FrustumBounds frustum = frustumBounds[i];
-                    if(frustum.channelID == currentChannelID || frustum.channelID == prevChannelID)
+                    if (frustum.channelID == currentChannelID || frustum.channelID == prevChannelID)
                         Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                 }
             }
 
-            /*if(isSneaking != event.player.isSneaking()){
-                if (frustratorEquipped) {
-                    for (int i = 0; i < frustumBounds.length; i++) {
-                        FrustumBounds frustum = frustumBounds[i];
-                        //if(event.player.isSneaking() ? frustum.channelID == currentChannelID : )
-                        Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
-                    }
-                }
-            }*/
-
-            //isSneaking = event.player.isSneaking();
-
             if (event.player.ticksExisted % 2 == 0) {
-               // if (showAllMainAreas)
-              //      return;
-
                 final int x = MathHelper.floor_double(event.player.posX);
                 final int y = MathHelper.floor_double(event.player.posY);
                 final int z = MathHelper.floor_double(event.player.posZ);
@@ -235,7 +212,7 @@ public class ClientEventHandler {
 
                 for (int i = 0; i < frustumBounds.length; i++) {
                     final FrustumBounds frustum = frustumBounds[i];
-                    if(showAllMainAreas && frustum.channelID == currentChannelID){
+                    if (showAllMainAreas && frustum.channelID == currentChannelID) {
                         continue;
                     }
                     if (frustumCheck(x, y, z, frustum)) {
@@ -253,7 +230,7 @@ public class ClientEventHandler {
                     if (frustumCheck(x, y, z, trigger)) {
                         for (int ii = 0; ii < trigger.parents.length; ii++) {
                             final FrustumBounds parent = trigger.parents[ii];
-                            if(showAllMainAreas && parent.channelID == currentChannelID){
+                            if (showAllMainAreas && parent.channelID == currentChannelID) {
                                 continue;
                             }
                             if (!localFrustums.contains(parent)) {
@@ -291,7 +268,6 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void renderWorldLast(RenderWorldLastEvent e) {
         final EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-
         GL11.glPushMatrix();
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -310,9 +286,8 @@ public class ClientEventHandler {
             if (showAllMainAreas) {
                 for (int i = 0; i < frustumBounds.length; i++) {
                     final FrustumBounds frustum = frustumBounds[i];
-                    if(frustum.channelID == currentChannelID || player.isSneaking()) {
-                        if (frustum == focusedFrustum || frustum == selectedFrustum)
-                            GL11.glLineWidth(6.0F);
+                    if (frustum.channelID == currentChannelID || player.isSneaking()) {
+                        if (frustum == focusedFrustum || frustum == selectedFrustum) GL11.glLineWidth(6.0F);
                         ab = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1).getOffsetBoundingBox(-d0, -d1, -d2);
                         Minecraft.getMinecraft().renderGlobal.drawOutlinedBoundingBox(ab, -1);
                         GL11.glLineWidth(3.0F);
@@ -323,9 +298,8 @@ public class ClientEventHandler {
                 GL11.glColor4f(1.0F, 1.0F, 0.0F, 0.8F);
                 for (int i = 0; i < triggerBounds.length; i++) {
                     final FrustumBounds frustum = triggerBounds[i];
-                    if(frustum.channelID == currentChannelID || player.isSneaking()) {
-                        if (frustum == focusedTrigger || frustum == selectedTrigger)
-                            GL11.glLineWidth(6.0F);
+                    if (frustum.channelID == currentChannelID || player.isSneaking()) {
+                        if (frustum == focusedTrigger || frustum == selectedTrigger) GL11.glLineWidth(6.0F);
                         ab = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1).getOffsetBoundingBox(-d0, -d1, -d2);
                         Minecraft.getMinecraft().renderGlobal.drawOutlinedBoundingBox(ab, -1);
                         GL11.glLineWidth(3.0F);
@@ -344,26 +318,24 @@ public class ClientEventHandler {
                 for (int i = 0; i < triggerBounds.length; i++) {
 
                     final FrustumBounds frustum = triggerBounds[i];
-                    if(frustum.channelID == currentChannelID || player.isSneaking()) {
-                    boolean isTrigger = false;
+                    if (frustum.channelID == currentChannelID || player.isSneaking()) {
+                        boolean isTrigger = false;
 
-                    for (int ii = 0; ii < frustum.parents.length; ii++) {
-                        final FrustumBounds parent = frustum.parents[ii];
-                        if (parent.equalsArea(selectedFrustum)) {
-                            isTrigger = true;
-                            break;
+                        for (int ii = 0; ii < frustum.parents.length; ii++) {
+                            final FrustumBounds parent = frustum.parents[ii];
+                            if (parent.equalsArea(selectedFrustum)) {
+                                isTrigger = true;
+                                break;
+                            }
                         }
+
+                        if (!isTrigger) continue;
+
+                        if (frustum == focusedTrigger || frustum == selectedTrigger) GL11.glLineWidth(6.0F);
+                        ab = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1).getOffsetBoundingBox(-d0, -d1, -d2);
+                        Minecraft.getMinecraft().renderGlobal.drawOutlinedBoundingBox(ab, -1);
+                        GL11.glLineWidth(3.0F);
                     }
-
-                    if (!isTrigger)
-                        continue;
-
-                    if (frustum == focusedTrigger || frustum == selectedTrigger)
-                        GL11.glLineWidth(6.0F);
-                    ab = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1).getOffsetBoundingBox(-d0, -d1, -d2);
-                    Minecraft.getMinecraft().renderGlobal.drawOutlinedBoundingBox(ab, -1);
-                    GL11.glLineWidth(3.0F);
-                }
                 }
                 GL11.glColor4f(1.0F, 0.0F, 0.0F, 0.8F);
             }

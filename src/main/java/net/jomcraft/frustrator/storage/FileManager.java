@@ -59,7 +59,7 @@ public class FileManager {
                                 frustum.parents = new FrustumBounds[0];
                             }
 
-                            if(frustum.channelID < 0) {
+                            if (frustum.channelID < 0) {
                                 frustum.channelID = 0;
                             }
                         }
@@ -88,8 +88,7 @@ public class FileManager {
 
     public static FrustumJSON getFrustumJSON() {
 
-        if (frustumJson != null)
-            return frustumJson;
+        if (frustumJson != null) return frustumJson;
 
         File frustratorFile = new File(frustratorFolder, "frustums.json");
         if (frustratorFile.exists()) {

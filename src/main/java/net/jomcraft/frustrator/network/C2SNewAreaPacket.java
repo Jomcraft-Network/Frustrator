@@ -9,11 +9,9 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -88,7 +86,7 @@ public class C2SNewAreaPacket implements IMessage {
             final int maxY = Math.max((int) message.pos1.yCoord, (int) message.pos2.yCoord);
             final int maxZ = Math.max((int) message.pos1.zCoord, (int) message.pos2.zCoord);
 
-            if(!FileManager.getFrustumJSON().getChannelMap().get(player.dimension).containsKey(message.channelID)){
+            if (!FileManager.getFrustumJSON().getChannelMap().get(player.dimension).containsKey(message.channelID)) {
                 player.addChatMessage(new ChatComponentTranslation("frustrator.create.fail.channel", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
                 return null;
             }

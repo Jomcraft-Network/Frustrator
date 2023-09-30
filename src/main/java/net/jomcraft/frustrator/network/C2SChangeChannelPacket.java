@@ -69,7 +69,6 @@ public class C2SChangeChannelPacket implements IMessage {
 
                 Integer index = null;
                 boolean trigger = false;
-               // int channelID = -1;
                 FrustumBounds[] parents = null;
 
                 for (int i = 0; i < bounds.size(); i++) {
@@ -79,20 +78,24 @@ public class C2SChangeChannelPacket implements IMessage {
                         index = i;
                         trigger = frustum.trigger;
                         parents = frustum.parents;
-                       // channelID = frustum.channelID;
                         break;
                     }
                 }
 
                 if (index != null) {
-                    bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents, message.channelID));
-                    player.addChatMessage(new ChatComponentTranslation("frustrator.channel.success", new Object[]{(trigger ? "trigger" : "main")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                    HashMap<Integer, String> map = FileManager.getFrustumJSON().getChannelMap().get(player.worldObj.provider.dimensionId);
+                    if (map != null && map.containsKey(message.channelID)) {
+                        bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents, message.channelID));
+                        player.addChatMessage(new ChatComponentTranslation("frustrator.channel.success", new Object[]{(trigger ? "trigger" : "main"), (map.get(message.channelID) + " (" + message.channelID + ")")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
+                    } else {
+                        player.addChatMessage(new ChatComponentTranslation("frustrator.channel.missing", new Object[]{(String.valueOf(message.channelID))}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
+                    }
+
                 } else {
-                    player.addChatMessage(new ChatComponentTranslation("frustrator.channel.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
+                    player.addChatMessage(new ChatComponentTranslation("frustrator.channel.fail", new Object[]{(trigger ? "trigger" : "main")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                 }
 
                 FileManager.getFrustumJSON().save();
-
                 Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)), player.dimension);
             }
 

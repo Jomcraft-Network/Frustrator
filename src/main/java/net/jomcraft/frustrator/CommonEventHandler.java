@@ -2,7 +2,6 @@ package net.jomcraft.frustrator;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent;
 import net.jomcraft.frustrator.network.S2CClearSelection;
 import net.jomcraft.frustrator.network.S2CSyncAllAreas;
 import net.jomcraft.frustrator.network.S2CSyncChannels;
@@ -32,7 +31,8 @@ public class CommonEventHandler {
         } else {
             channels = new HashMap<Integer, String>();
         }
-            Frustrator.network.sendTo(new S2CSyncChannels(channels), (EntityPlayerMP) event.player);
+
+        Frustrator.network.sendTo(new S2CSyncChannels(channels), (EntityPlayerMP) event.player);
     }
 
     @SubscribeEvent
@@ -51,6 +51,7 @@ public class CommonEventHandler {
         } else {
             channels = new HashMap<Integer, String>();
         }
+
         Frustrator.network.sendTo(new S2CSyncChannels(channels), (EntityPlayerMP) event.player);
     }
 }
