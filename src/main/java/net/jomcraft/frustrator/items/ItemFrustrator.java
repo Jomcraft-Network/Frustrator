@@ -4,17 +4,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.jomcraft.frustrator.ClientEventHandler;
 import net.jomcraft.frustrator.Frustrator;
-import net.jomcraft.frustrator.network.C2SAddTriggerPacket;
-import net.jomcraft.frustrator.network.C2SDeleteAreaPacket;
-import net.jomcraft.frustrator.network.C2SNewAreaPacket;
-import net.jomcraft.frustrator.network.C2SResizeAreaPacket;
+import net.jomcraft.frustrator.network.*;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.command.CommandHelp;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -88,7 +83,11 @@ public class ItemFrustrator extends Item {
                                     Frustrator.network.sendToServer(new C2SResizeAreaPacket(pos1, pos2, oldPos1, oldPos2));
 
                                 } else {
-                                    Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, null));
+                                    int channelID = 0;
+                                    if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemFrustrator && player.getHeldItem().hasTagCompound() && player.getHeldItem().getTagCompound().hasKey("channelID")) {
+                                        channelID = player.getHeldItem().getTagCompound().getInteger("channelID");
+                                    }
+                                    Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, null, channelID));
                                 }
 
                                 pos1 = null;
@@ -97,12 +96,17 @@ public class ItemFrustrator extends Item {
                         }
                     } else {
                         if (ClientEventHandler.focusedFrustum != null && ClientEventHandler.selectedFrustum == null && ClientEventHandler.selectedTrigger != null) {
-                            Frustrator.network.sendToServer(new C2SAddTriggerPacket(Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.minX, ClientEventHandler.focusedFrustum.minY, ClientEventHandler.focusedFrustum.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.maxX, ClientEventHandler.focusedFrustum.maxY, ClientEventHandler.focusedFrustum.maxZ)));
+                            if (ClientEventHandler.focusedFrustum.channelID == ClientEventHandler.currentChannelID && ClientEventHandler.selectedTrigger.channelID == ClientEventHandler.currentChannelID)
+                                Frustrator.network.sendToServer(new C2SAddTriggerPacket(Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.minX, ClientEventHandler.focusedFrustum.minY, ClientEventHandler.focusedFrustum.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.maxX, ClientEventHandler.focusedFrustum.maxY, ClientEventHandler.focusedFrustum.maxZ)));
                         }
 
-                        ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
-                        pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.minX, ClientEventHandler.selectedFrustum.minY, ClientEventHandler.selectedFrustum.minZ);
-                        pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.maxX, ClientEventHandler.selectedFrustum.maxY, ClientEventHandler.selectedFrustum.maxZ);
+                        if (!player.isSneaking()) {
+                            ClientEventHandler.selectedFrustum = ClientEventHandler.focusedFrustum;
+                            pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.minX, ClientEventHandler.selectedFrustum.minY, ClientEventHandler.selectedFrustum.minZ);
+                            pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedFrustum.maxX, ClientEventHandler.selectedFrustum.maxY, ClientEventHandler.selectedFrustum.maxZ);
+                        } else {
+                            Frustrator.network.sendToServer(new C2SChangeChannelPacket(ClientEventHandler.currentChannelID, Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.minX, ClientEventHandler.focusedFrustum.minY, ClientEventHandler.focusedFrustum.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedFrustum.maxX, ClientEventHandler.focusedFrustum.maxY, ClientEventHandler.focusedFrustum.maxZ)));
+                        }
                     }
 
                     return itemStackIn;
@@ -120,9 +124,13 @@ public class ItemFrustrator extends Item {
 
                                 } else {
                                     if (ClientEventHandler.selectedFrustum == null) {
-                                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No parent main area is selected!"));
+                                        player.addChatMessage(new ChatComponentTranslation("frustrator.trigger.noParent", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
                                     } else {
-                                        Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, ClientEventHandler.selectedFrustum));
+                                        int channelID = 0;
+                                        if (player.getHeldItem() != null && player.getHeldItem().getItem() instanceof ItemFrustrator && player.getHeldItem().hasTagCompound() && player.getHeldItem().getTagCompound().hasKey("channelID")) {
+                                            channelID = player.getHeldItem().getTagCompound().getInteger("channelID");
+                                        }
+                                        Frustrator.network.sendToServer(new C2SNewAreaPacket(pos1, pos2, ClientEventHandler.selectedFrustum, channelID));
                                     }
                                 }
 
@@ -137,9 +145,13 @@ public class ItemFrustrator extends Item {
 
                         }
                     } else {
-                        ClientEventHandler.selectedTrigger = ClientEventHandler.focusedTrigger;
-                        pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ);
-                        pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ);
+                        if (!player.isSneaking()) {
+                            ClientEventHandler.selectedTrigger = ClientEventHandler.focusedTrigger;
+                            pos1 = Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.minX, ClientEventHandler.selectedTrigger.minY, ClientEventHandler.selectedTrigger.minZ);
+                            pos2 = Vec3.createVectorHelper(ClientEventHandler.selectedTrigger.maxX, ClientEventHandler.selectedTrigger.maxY, ClientEventHandler.selectedTrigger.maxZ);
+                        } else {
+                            Frustrator.network.sendToServer(new C2SChangeChannelPacket(ClientEventHandler.currentChannelID, Vec3.createVectorHelper(ClientEventHandler.focusedTrigger.minX, ClientEventHandler.focusedTrigger.minY, ClientEventHandler.focusedTrigger.minZ), Vec3.createVectorHelper(ClientEventHandler.focusedTrigger.maxX, ClientEventHandler.focusedTrigger.maxY, ClientEventHandler.focusedTrigger.maxZ)));
+                        }
                     }
                 }
             } else {
@@ -241,5 +253,18 @@ public class ItemFrustrator extends Item {
             p_77624_3_.add(EnumChatFormatting.GOLD + StatCollector.translateToLocal("frustrator.leftClick.onAir") + " " + EnumChatFormatting.AQUA + StatCollector.translateToLocal("frustrator.deselect.triggerArea"));
             p_77624_3_.add(EnumChatFormatting.GOLD + StatCollector.translateToLocal("frustrator.leftClick.shiftOnAir") + " " + EnumChatFormatting.AQUA + StatCollector.translateToLocal("frustrator.delete.triggerArea"));
         }
+
+        p_77624_3_.add("");
+        int channelID = 0;
+        if (p_77624_1_.hasTagCompound() && p_77624_1_.getTagCompound().hasKey("channelID")) {
+            channelID = p_77624_1_.getTagCompound().getInteger("channelID");
+        }
+
+        String channelTag = "UNKNOWN";
+
+        if (ClientEventHandler.channelMap != null && ClientEventHandler.channelMap.containsKey(channelID))
+            channelTag = ClientEventHandler.channelMap.get(channelID);
+
+        p_77624_3_.add(EnumChatFormatting.RED + StatCollector.translateToLocal("frustrator.channelID") + " " + EnumChatFormatting.RESET + channelTag + " (" + channelID + ")");
     }
 }

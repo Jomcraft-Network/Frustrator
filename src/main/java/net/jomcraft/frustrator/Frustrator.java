@@ -9,9 +9,11 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
+import net.jomcraft.frustrator.command.CommandFrustrator;
 import net.jomcraft.frustrator.network.*;
 import net.jomcraft.frustrator.proxy.ServerProxy;
 import net.jomcraft.frustrator.storage.FileManager;
+import net.minecraft.command.ICommand;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +43,7 @@ public class Frustrator {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand((ICommand) new CommandFrustrator());
         FileManager.initialize();
     }
 
@@ -69,8 +72,10 @@ public class Frustrator {
         network.registerMessage(C2SDeleteAreaPacket.Handler.class, C2SDeleteAreaPacket.class, 1, Side.SERVER);
         network.registerMessage(C2SResizeAreaPacket.Handler.class, C2SResizeAreaPacket.class, 2, Side.SERVER);
         network.registerMessage(C2SAddTriggerPacket.Handler.class, C2SAddTriggerPacket.class, 3, Side.SERVER);
-        network.registerMessage(S2CSyncAllAreas.Handler.class, S2CSyncAllAreas.class, 4, Side.CLIENT);
-        network.registerMessage(S2CClearSelection.Handler.class, S2CClearSelection.class, 5, Side.CLIENT);
+        network.registerMessage(C2SChangeChannelPacket.Handler.class, C2SChangeChannelPacket.class, 4, Side.SERVER);
+        network.registerMessage(S2CSyncAllAreas.Handler.class, S2CSyncAllAreas.class, 5, Side.CLIENT);
+        network.registerMessage(S2CClearSelection.Handler.class, S2CClearSelection.class, 6, Side.CLIENT);
+        network.registerMessage(S2CSyncChannels.Handler.class, S2CSyncChannels.class, 7, Side.CLIENT);
     }
 
     @EventHandler

@@ -9,11 +9,9 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -23,6 +21,7 @@ public class C2SNewAreaPacket implements IMessage {
 
     private Vec3 pos1;
     private Vec3 pos2;
+    private int channelID;
 
     @Nullable
     private FrustumBounds parent;
@@ -31,10 +30,11 @@ public class C2SNewAreaPacket implements IMessage {
 
     }
 
-    public C2SNewAreaPacket(Vec3 pos1, Vec3 pos2, FrustumBounds parent) {
+    public C2SNewAreaPacket(Vec3 pos1, Vec3 pos2, FrustumBounds parent, int channelID) {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.parent = parent;
+        this.channelID = channelID;
     }
 
     @Override
@@ -42,7 +42,9 @@ public class C2SNewAreaPacket implements IMessage {
         this.pos1 = Vec3.createVectorHelper(buf.readInt(), buf.readInt(), buf.readInt());
         this.pos2 = Vec3.createVectorHelper(buf.readInt(), buf.readInt(), buf.readInt());
         if (buf.readBoolean())
-            this.parent = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null);
+            this.parent = new FrustumBounds(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), false, null, -1);
+
+        this.channelID = buf.readInt();
     }
 
     @Override
@@ -66,6 +68,7 @@ public class C2SNewAreaPacket implements IMessage {
             buf.writeInt(this.parent.maxY);
             buf.writeInt(this.parent.maxZ);
         }
+        buf.writeInt(this.channelID);
     }
 
     public static class Handler implements IMessageHandler<C2SNewAreaPacket, IMessage> {
@@ -84,6 +87,11 @@ public class C2SNewAreaPacket implements IMessage {
             final int maxY = Math.max((int) message.pos1.yCoord, (int) message.pos2.yCoord);
             final int maxZ = Math.max((int) message.pos1.zCoord, (int) message.pos2.zCoord);
 
+            if (!FileManager.getFrustumJSON().getChannelMap().get(player.dimension).containsKey(message.channelID)) {
+                player.addChatMessage(new ChatComponentTranslation("frustrator.create.fail.channel", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
+                return null;
+            }
+
             if (dimMap.containsKey(player.worldObj.provider.dimensionId)) {
                 bounds = dimMap.get(player.worldObj.provider.dimensionId);
                 Integer index = null;
@@ -97,21 +105,21 @@ public class C2SNewAreaPacket implements IMessage {
                 }
 
                 if (index == null) {
-                    bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[]{message.parent}));
+                    bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[]{message.parent}, message.channelID));
                     player.addChatMessage(new ChatComponentTranslation("frustrator.create.success", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
 
                     FileManager.getFrustumJSON().save();
-                    Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)));
+                    Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)), player.dimension);
                 } else {
                     player.addChatMessage(new ChatComponentTranslation("frustrator.create.fail", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.YELLOW)));
                 }
             } else {
                 bounds = new ArrayList<FrustumBounds>();
-                bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[]{message.parent}));
+                bounds.add(new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, message.parent == null ? false : true, new FrustumBounds[]{message.parent}, message.channelID));
                 player.addChatMessage(new ChatComponentTranslation("frustrator.create.success", new Object[]{(message.parent == null ? "main" : "trigger")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                 dimMap.put(player.worldObj.provider.dimensionId, bounds);
                 FileManager.getFrustumJSON().save();
-                Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)));
+                Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)), player.dimension);
             }
             return null;
         }

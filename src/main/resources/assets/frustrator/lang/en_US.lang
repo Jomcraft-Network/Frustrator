@@ -11,6 +11,8 @@ frustrator.addTrigger.success=Successfully linked the clicked main area to the s
 frustrator.addTrigger.alreadyExists=This main area and trigger area are already linked
 frustrator.addTrigger.fail=No area has been modified
 
+frustrator.trigger.noParent=No parent main area is selected
+
 frustrator.resize.success=Successfully resized selected %s area
 frustrator.resize.fail=No area has been resized
 
@@ -39,3 +41,21 @@ frustrator.confirm.creationTriggerArea=Confirm creation of new trigger area (yel
 frustrator.confirm.resizeMainArea=Confirm new positions of selected main area (confirm resize)
 frustrator.confirm.resizeTriggerArea=Confirm new positions of selected trigger area (confirm resize)
 frustrator.confirm.linking=Confirm linking selected trigger area (yellow) to clicked main area
+
+frustrator.channel.success=Successfully set clicked %s area's channelID to %s
+frustrator.channel.fail=Could not set clicked %s area's channelID
+frustrator.channel.missing=ChannelID %s is missing
+
+frustrator.command.noInt=Given ID isn't a number
+frustrator.command.claim.success=Successfully changed item's channelID to %s
+
+frustrator.command.set.success=Successfully renamed channelID %s to %s
+
+frustrator.command.add.success=Successfully added channelID %s, existing areas can be added to this ID via SHIFT + Right Click on previously deselected areas
+
+frustrator.command.add.fail=ChannelID %s already exists
+
+frustrator.command.remove.success=Successfully deleted channelID %s, all corresponding areas have been moved to channelID 0
+frustrator.command.remove.fail=Failed to delete channelID %s
+
+frustrator.channelID=ChannelID:

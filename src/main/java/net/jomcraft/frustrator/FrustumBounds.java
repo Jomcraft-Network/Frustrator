@@ -1,7 +1,5 @@
 package net.jomcraft.frustrator;
 
-import com.google.gson.annotations.SerializedName;
-
 import javax.annotation.Nullable;
 import java.util.Arrays;
 
@@ -23,7 +21,9 @@ public class FrustumBounds {
 
     public FrustumBounds[] parents;
 
-    public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds[] parents) {
+    public int channelID = 0;
+
+    public FrustumBounds(final int minX, final int minY, final int minZ, final int maxX, final int maxY, final int maxZ, boolean trigger, FrustumBounds[] parents, int channelID) {
         this.minX = minX;
         this.minY = minY;
         this.minZ = minZ;
@@ -32,11 +32,11 @@ public class FrustumBounds {
         this.maxZ = maxZ;
         this.trigger = trigger;
         this.parents = parents;
+        this.channelID = channelID;
     }
 
     public boolean equalsArea(FrustumBounds frustum) {
-        if (frustum == null)
-            return false;
+        if (frustum == null) return false;
         if (frustum.minX == this.minX && frustum.minY == this.minY && frustum.minZ == this.minZ && frustum.maxX == this.maxX && frustum.maxY == this.maxY && frustum.maxZ == this.maxZ)
             return true;
 
@@ -45,6 +45,6 @@ public class FrustumBounds {
 
     @Override
     public String toString() {
-        return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]; isTrigger: " + this.trigger + " Parent: " + (this.parents == null ? "no parents" : Arrays.stream(this.parents).toString());
+        return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]; isTrigger: " + this.trigger + " Parent: " + (this.parents == null ? "no parents" : Arrays.stream(this.parents).toString() + "; " + channelID);
     }
 }

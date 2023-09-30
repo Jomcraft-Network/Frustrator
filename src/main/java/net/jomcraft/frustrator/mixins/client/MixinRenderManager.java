@@ -16,11 +16,11 @@ public class MixinRenderManager {
 
     @Inject(method = "func_147939_a", at = @At(value = "HEAD"), cancellable = true, remap = false)
     public boolean func_147939_a(Entity p_147939_1_, double p_147939_2_, double p_147939_4_, double p_147939_6_, float p_147939_8_, float p_147939_9_, boolean p_147939_10_, CallbackInfoReturnable<Boolean> info) {
-
-        if (ClientEventHandler.showAllMainAreas) return false;
-
         final FrustumBounds entityFrustum = ((IMixinEntity) p_147939_1_).getFrustum();
         if (entityFrustum == null) return false;
+
+        if (ClientEventHandler.showAllMainAreas && entityFrustum.channelID == ClientEventHandler.currentChannelID)
+            return false;
 
         if (!(p_147939_1_ instanceof EntityPlayer)) {
 

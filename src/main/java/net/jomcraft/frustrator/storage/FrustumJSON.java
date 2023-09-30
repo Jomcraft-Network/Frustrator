@@ -16,6 +16,8 @@ public class FrustumJSON {
 
     private HashMap<Integer, ArrayList<FrustumBounds>> frustumMap = new HashMap<Integer, ArrayList<FrustumBounds>>();
 
+    private HashMap<Integer, HashMap<Integer, String>> channelMap = new HashMap<Integer, HashMap<Integer, String>>();
+
     public FrustumJSON setInitialVersion(String version) {
         this.initialVersion = version;
         return this;
@@ -23,6 +25,10 @@ public class FrustumJSON {
 
     public HashMap<Integer, ArrayList<FrustumBounds>> getFrustumMap() {
         return this.frustumMap;
+    }
+
+    public HashMap<Integer, HashMap<Integer, String>> getChannelMap() {
+        return this.channelMap;
     }
 
     public String getVersion() {

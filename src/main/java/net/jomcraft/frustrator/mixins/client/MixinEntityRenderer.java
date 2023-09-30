@@ -38,6 +38,9 @@ public class MixinEntityRenderer {
             for (int i = 0; i < ClientEventHandler.frustumBounds.length; i++) {
                 FrustumBounds frustum = ClientEventHandler.frustumBounds[i];
 
+                if (frustum.channelID != ClientEventHandler.currentChannelID && !Minecraft.getMinecraft().thePlayer.isSneaking())
+                    continue;
+
                 final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                 MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
@@ -53,7 +56,6 @@ public class MixinEntityRenderer {
                         main = true;
                     }
                 }
-
             }
         }
 
@@ -61,6 +63,9 @@ public class MixinEntityRenderer {
 
             for (int i = 0; i < ClientEventHandler.triggerBounds.length; i++) {
                 FrustumBounds frustum = ClientEventHandler.triggerBounds[i];
+
+                if (frustum.channelID != ClientEventHandler.currentChannelID && !Minecraft.getMinecraft().thePlayer.isSneaking())
+                    continue;
 
                 final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(frustum.minX, frustum.minY, frustum.minZ, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
                 MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
@@ -77,7 +82,6 @@ public class MixinEntityRenderer {
                         trigger = true;
                     }
                 }
-
             }
         }
         if (!main) ClientEventHandler.focusedFrustum = null;

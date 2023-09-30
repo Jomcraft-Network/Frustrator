@@ -9,7 +9,6 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
@@ -106,7 +105,7 @@ public class C2SDeleteAreaPacket implements IMessage {
 
                 if (index != null || !trigger) {
                     FileManager.getFrustumJSON().save();
-                    Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, message.min, message.max));
+                    Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, message.min, message.max), player.dimension);
                 }
 
             }

@@ -58,16 +58,18 @@ public class FileManager {
                             if (frustum.parents == null) {
                                 frustum.parents = new FrustumBounds[0];
                             }
+
+                            if (frustum.channelID < 0) {
+                                frustum.channelID = 0;
+                            }
                         }
                     }
                     frustumJson.save();
 
                 } catch (Exception e) {
                     Frustrator.log.log(Level.ERROR, "Exception while reading frustum file: ", e);
-                    // if (e instanceof JsonSyntaxException) {
                     frustratorFile.renameTo(new File(frustratorFolder, "frustums_malformed.json"));
                     initJSON();
-                    // }
                 }
 
             } else {
@@ -84,8 +86,7 @@ public class FileManager {
 
     public static FrustumJSON getFrustumJSON() {
 
-        if (frustumJson != null)
-            return frustumJson;
+        if (frustumJson != null) return frustumJson;
 
         File frustratorFile = new File(frustratorFolder, "frustums.json");
         if (frustratorFile.exists()) {

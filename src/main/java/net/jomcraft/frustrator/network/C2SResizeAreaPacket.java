@@ -9,7 +9,6 @@ import net.jomcraft.frustrator.Frustrator;
 import net.jomcraft.frustrator.FrustumBounds;
 import net.jomcraft.frustrator.storage.FileManager;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.Vec3;
@@ -81,6 +80,7 @@ public class C2SResizeAreaPacket implements IMessage {
 
                 Integer index = null;
                 boolean trigger = false;
+                int channelID = -1;
                 FrustumBounds[] parents = null;
 
                 for (int i = 0; i < bounds.size(); i++) {
@@ -90,12 +90,13 @@ public class C2SResizeAreaPacket implements IMessage {
                         index = i;
                         trigger = frustum.trigger;
                         parents = frustum.parents;
+                        channelID = frustum.channelID;
                         break;
                     }
                 }
 
                 if (index != null) {
-                    bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents));
+                    bounds.set((int) index, new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, trigger, parents, channelID));
                     player.addChatMessage(new ChatComponentTranslation("frustrator.resize.success", new Object[]{(trigger ? "trigger" : "main")}).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.GREEN)));
                 } else {
                     player.addChatMessage(new ChatComponentTranslation("frustrator.resize.fail", new Object[0]).setChatStyle(ClientEventHandler.style.setColor(EnumChatFormatting.RED)));
@@ -107,7 +108,7 @@ public class C2SResizeAreaPacket implements IMessage {
                         for (int ii = 0; ii < frustum.parents.length; ii++) {
                             final FrustumBounds parent = frustum.parents[ii];
                             if (frustum.trigger && parent.minX == message.oldPos1.xCoord && parent.minY == message.oldPos1.yCoord && parent.minZ == message.oldPos1.zCoord && parent.maxX == message.oldPos2.xCoord && parent.maxY == message.oldPos2.yCoord && parent.maxZ == message.oldPos2.zCoord) {
-                                frustum.parents[ii] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, false, null);
+                                frustum.parents[ii] = new FrustumBounds(minX, minY, minZ, maxX, maxY, maxZ, false, null, -1);
                             }
                         }
                     }
@@ -115,7 +116,7 @@ public class C2SResizeAreaPacket implements IMessage {
 
                 FileManager.getFrustumJSON().save();
 
-                Frustrator.network.sendToAll(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)));
+                Frustrator.network.sendToDimension(new S2CSyncAllAreas(bounds.toArray(new FrustumBounds[bounds.size()]), true, Vec3.createVectorHelper(minX, minY, minZ), Vec3.createVectorHelper(maxX, maxY, maxZ)), player.dimension);
             }
 
             return null;

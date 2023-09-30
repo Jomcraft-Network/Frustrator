@@ -38,9 +38,10 @@ public class MixinTileEntity implements IMixinEntity {
     public void updateEntity(CallbackInfo info) {
         if (worldObj.isRemote) {
 
-            if (ClientEventHandler.showAllMainAreas) return;
-
             if (this.frustumBounds != null) {
+
+                if (ClientEventHandler.showAllMainAreas && this.frustumBounds.channelID == ClientEventHandler.currentChannelID)
+                    return;
 
                 if (ClientEventHandler.localFrustums.isEmpty()) {
                     info.cancel();
