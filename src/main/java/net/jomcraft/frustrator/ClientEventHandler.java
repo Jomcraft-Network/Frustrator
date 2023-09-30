@@ -62,17 +62,18 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void keyInput(InputEvent.KeyInputEvent event) {
-        if(BypassKeybind.bypass.isPressed()){
+        if (BypassKeybind.bypass.isPressed()) {
             bypassFrustrator = Boolean.logicalXor(bypassFrustrator, true);
         }
 
-        if(Minecraft.getMinecraft().theWorld != null) {
-            for(int i = 0; i < frustumBounds.length; i++){
+        if (Minecraft.getMinecraft().theWorld != null) {
+            for (int i = 0; i < frustumBounds.length; i++) {
                 FrustumBounds frustum = frustumBounds[i];
                 Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
             }
         }
     }
+
     @SubscribeEvent
     public void entityJoinWorld(EntityJoinWorldEvent event) {
         final int x = MathHelper.floor_double(event.entity.posX);
@@ -98,8 +99,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void livingUpdate(LivingEvent.LivingUpdateEvent event) {
         if (event.entity.worldObj.isRemote) {
-            if(bypassFrustrator)
-                return;
+            if (bypassFrustrator) return;
 
             final FrustumBounds frustum = ((IMixinEntity) event.entity).getFrustum();
 
@@ -383,7 +383,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public void renderGameOverlay(RenderGameOverlayEvent.Text e) {
-        if(bypassFrustrator) {
+        if (bypassFrustrator) {
             int width = Minecraft.getMinecraft().fontRenderer.getStringWidth("Frustrator bypassed!");
             GL11.glEnable(GL11.GL_BLEND);
             OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
