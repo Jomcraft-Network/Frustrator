@@ -15,6 +15,8 @@ public class MixinEffectRenderer {
 
     @Inject(method = "addEffect", at = @At(value = "HEAD"), cancellable = true, remap = true)
     public void addEffect(EntityFX p_78873_1_, CallbackInfo info) {
+        if(ClientEventHandler.bypassFrustrator)
+            return;
 
         final int x = MathHelper.floor_double(p_78873_1_.posX);
         final int y = MathHelper.floor_double(p_78873_1_.posY);

@@ -14,6 +14,9 @@ public class MixinWorldClient {
 
     @Inject(method = "playSound", at = @At(value = "HEAD"), cancellable = true, remap = true)
     public void playSound(double x, double y, double z, String soundName, float volume, float pitch, boolean distanceDelay, CallbackInfo info) {
+        if(ClientEventHandler.bypassFrustrator)
+            return;
+
         final int xCoord = MathHelper.floor_double(x);
         final int yCoord = MathHelper.floor_double(y);
         final int zCoord = MathHelper.floor_double(z);

@@ -1,6 +1,7 @@
 package net.jomcraft.frustrator;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.jomcraft.frustrator.items.ItemFrustrator;
 import net.minecraft.client.Minecraft;
@@ -8,10 +9,8 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatStyle;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -52,11 +51,27 @@ public class ClientEventHandler {
 
     public static HashMap<Integer, String> channelMap = null;
 
+    public static boolean bypassFrustrator = false;
+
     public static boolean frustumCheck(final int x, final int y, final int z, final FrustumBounds frustum) {
         if ((x >= frustum.minX && x <= (frustum.maxX)) && (y >= frustum.minY && y <= (frustum.maxY)) && (z >= frustum.minZ && z <= (frustum.maxZ))) {
             return true;
         }
         return false;
+    }
+
+    @SubscribeEvent
+    public void keyInput(InputEvent.KeyInputEvent event) {
+        if (BypassKeybind.bypass.isPressed()) {
+            bypassFrustrator = Boolean.logicalXor(bypassFrustrator, true);
+        }
+
+        if (Minecraft.getMinecraft().theWorld != null) {
+            for (int i = 0; i < frustumBounds.length; i++) {
+                FrustumBounds frustum = frustumBounds[i];
+                Minecraft.getMinecraft().renderGlobal.markBlocksForUpdate(frustum.minX - 1, frustum.minY - 1, frustum.minZ - 1, frustum.maxX + 1, frustum.maxY + 1, frustum.maxZ + 1);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -84,6 +99,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void livingUpdate(LivingEvent.LivingUpdateEvent event) {
         if (event.entity.worldObj.isRemote) {
+            if (bypassFrustrator) return;
 
             final FrustumBounds frustum = ((IMixinEntity) event.entity).getFrustum();
 
@@ -363,5 +379,19 @@ public class ClientEventHandler {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glPopMatrix();
+    }
+
+    @SubscribeEvent
+    public void renderGameOverlay(RenderGameOverlayEvent.Text e) {
+        if (bypassFrustrator) {
+            int width = Minecraft.getMinecraft().fontRenderer.getStringWidth("Frustrator bypassed!");
+            GL11.glEnable(GL11.GL_BLEND);
+            OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            Minecraft.getMinecraft().fontRenderer.drawStringWithShadow("Frustrator bypassed!", e.resolution.getScaledWidth() - width - 5, e.resolution.getScaledHeight() - 12, 0xA70000);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            GL11.glDisable(GL11.GL_LIGHTING);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+        }
     }
 }
