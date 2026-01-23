@@ -41,7 +41,7 @@ plugins {
     id 'net.darkhax.curseforgegradle' version '1.0.11'
 }
 
-def fileVersion = "1.1.2"
+def fileVersion = "1.1.3"
 
 version = "1.7.10-$fileVersion"
 
@@ -223,6 +223,7 @@ dependencies {
 
 jar {
 	exclude('com/carpentersblocks/**')
+    exclude('lotr/**')
 	manifest {
         attributes("FMLCorePluginContainsFMLMod": "true")
         attributes("FMLAT": "frustrator_at.cfg")

@@ -7,6 +7,7 @@
 
   ],
   "client": [
+    "client/MixinEntityRenderer",
     "client/MixinChunk",
     "client/MixinEffectRenderer",
     "client/MixinRenderManager",
@@ -15,8 +16,8 @@
     "client/MixinEntity",
     "client/MixinTileEntity",
     "client/MixinRenderBlocks",
-    "client/MixinEntityRenderer",
-    "client/MixinNetHandlerPlayClient"
+    "client/MixinS14PacketEntity",
+    "client/MixinLOTREntityRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
