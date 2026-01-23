@@ -46,6 +46,8 @@ frustrator.channel.success=Successfully set clicked %s area's channelID to %s
 frustrator.channel.fail=Could not set clicked %s area's channelID
 frustrator.channel.missing=ChannelID %s is missing
 
+frustrator.command.list=List of ChannelIDs
+
 frustrator.command.noInt=Given ID isn't a number
 frustrator.command.claim.success=Successfully changed item's channelID to %s
 
